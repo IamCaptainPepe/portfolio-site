@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Evgeny — Purkov / CaptainPepe</title>
+<meta name="color-scheme" content="dark">
+<style>
+  :root{ --bg:#0b1220; --fg:#ececf3; --muted:#a9afc5; --line:#24304a; --card:#0f1422;
+         --radius:22px; --shadow:0 14px 56px rgba(0,0,0,.45) }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  html{ scroll-behavior:smooth; scroll-snap-type:y mandatory;
+  body{ margin:0; background:var(--bg); color:var(--fg);
+        font:18px/1.65 ui-sans-serif,system-ui,-apple-system,Inter,Segoe UI,Roboto,Arial,sans-serif;
+        -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility }
+
+  /* Фон */
+  #bg{position:fixed;inset:0;z-index:-2;overflow:hidden}
+  .bg-layer{position:absolute;inset:0;opacity:0;transition:opacity .7s ease}
+  .bg-layer.show{opacity:1}
+  .grad-1{background:
+    radial-gradient(1200px 800px at 12% 12%, #243a77 0%, transparent 60%),
+    radial-gradient(1100px 760px at 84% 18%, #0a5a7d 0%, transparent 55%),
+    linear-gradient(180deg,#0b1220,#0c1322 60%,#0b1220)}
+  .grad-2{background:
+    radial-gradient(1100px 760px at 82% 20%, #1b2f6a 0%, transparent 60%),
+    radial-gradient(1000px 700px at 14% 78%, #0a5070 0%, transparent 60%),
+    linear-gradient(180deg,#0b1220,#0c1424)}
+  .grad-3{background:
+    radial-gradient(1100px 760px at 20% 80%, #3a1c6d 0%, transparent 55%),
+    radial-gradient(900px 640px at 82% 18%, #005a86 0%, transparent 55%),
+    linear-gradient(180deg,#0b1220,#0c1424)}
+  .grad-4{background:
+    radial-gradient(1200px 760px at 82% 76%, #1e355f 0%, transparent 60%),
+    radial-gradient(900px 620px at 14% 20%, #4a1768 0%, transparent 60%),
+    linear-gradient(180deg,#0b1220,#0c1424)}
+
+  /* Верхняя панель */
+  .top{position:fixed;left:16px;right:16px;top:12px;z-index:20;display:flex;align-items:center;gap:14px;
+       background:linear-gradient(180deg,rgba(20,26,44,.85),rgba(20,26,44,.35));
+       border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:8px 10px;backdrop-filter:blur(10px)}
+  .logo{display:flex;align-items:center;gap:10px;color:inherit;text-decoration:none}
+  /* .mark убран */
+  .avatar{width:22px;height:22px;border-radius:999px;object-fit:cover;transform:scaleX(-1);transform-origin:center;display:block;
+          box-shadow:0 0 0 1px rgba(255,255,255,.28), 0 6px 14px rgba(0,0,0,.35)}
+  .word{font-weight:800;letter-spacing:.2px}.word span{opacity:.72}
+  .spacer{flex:1}
+
+  .social{display:flex;gap:10px;flex-wrap:wrap}
+  .sbtn{display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 12px;border-radius:999px;border:1px solid rgba(0,0,0,.25);
+        color:#fff;font-weight:800;letter-spacing:.2px;white-space:nowrap;text-decoration:none;
+        transition:filter .15s,transform .15s;box-shadow:0 8px 20px rgba(0,0,0,.35)}
+  .sbtn:hover{filter:brightness(.96);transform:translateY(-1px)}
+  .ico{width:16px;height:16px;display:block}
+  .tg{background:#229ED9}
+  .x {background:#000; border-color:#3a3a3a; box-shadow:0 0 0 1px rgba(255,255,255,.08) inset, 0 10px 24px rgba(0,0,0,.45)}
+  .dc{background:#5865F2}
+  .yt{background:#FF0000}
+
+  .lang{display:flex;gap:8px;margin-left:auto}
+  .lang button{height:34px;padding:0 12px;border-radius:10px;border:1px solid rgba(255,255,255,.2);
+               background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.04));
+               color:#fff;font-weight:800;letter-spacing:.2px;cursor:pointer}
+  .lang button.active{border-color:#fff}
+
+  /* Секции */
+  section{min-height:100svh;scroll-snap-align:start;display:grid;place-items:center;padding:128px 18px 68px}
+  .inner{max-width:1100px;width:100%}
+  .card{background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);box-shadow:var(--shadow);padding:28px}
+  .eyebrow{color:var(--muted);letter-spacing:.14em;text-transform:uppercase;font-size:12px;margin-bottom:10px}
+
+  h1{margin:0}
+  .name{display:block;font-size:clamp(40px,6.2vw,62px);line-height:1.02;font-weight:800}
+  .aka{display:block;margin-top:6px;font-size:clamp(16px,2.6vw,22px);color:var(--muted);font-weight:700}
+  h2{margin:0 0 12px;font-size:clamp(18px,2.3vw,22px);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+  p{margin:0 0 12px}
+  .grid{display:grid;gap:14px}
+  .two{grid-template-columns:1.4fr .6fr}
+  .proj{padding:18px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.015));box-shadow:0 0 0 1px rgba(255,255,255,.02) inset}
+  .proj + .proj{margin-top:10px}
+
+  .photo{width:60%;max-width:260px;aspect-ratio:1/1;border-radius:20px;overflow:hidden;border:1px solid var(--line);
+         background:linear-gradient(180deg,#1a2136,#0f1424);display:grid;place-items:center;justify-self:end}
+  .photo img{width:100%;height:100%;object-fit:cover;display:block}
+  .ph-placeholder{width:56%;height:56%;border-radius:50%;background:conic-gradient(from 210deg,#7b6cff,#00d2ff,#33ffa1,#7b6cff);filter:blur(10px);opacity:.7}
+
+  /* Мобилка */
+  .mobile-only{display:none}
+  @media(max-width:900px){
+    .top{left:8px;right:8px;top:8px;border-radius:12px;padding:8px 10px}
+    .lang button{height:30px;border-radius:8px;padding:0 10px}
+    section{padding:110px 14px 64px}
+    .two{grid-template-columns:1fr}
+    .photo{justify-self:start;max-width:180px;width:60%}
+    .social{display:none}
+    .mobile-only{display:grid}
+  }
+  .mob-buttons{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:460px){ .mob-buttons{grid-template-columns:1fr} }
+  .sbtn.lg{height:56px;font-size:16px;justify-content:center}
+</style>
+</head>
+<body>
+  <div id="bg"></div>
+
+  <!-- Верхняя панель -->
+  <div class="top">
+    <a href="#hero" class="logo" aria-label="Home">
+      <img class="avatar" src="assets/img/photo.png" alt="Evgeny avatar" onerror="this.remove()">
+      <div class="word">Purkov · <span>CaptainPepe</span></div>
+    </a>
+
+    <div class="social" aria-label="Contacts">
+      <!-- Telegram -->
+      <a class="sbtn tg" href="https://t.me/I_am_Captain_Pepe" target="_blank" rel="noopener">
+        <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path fill="#fff" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.287 5.906q-1.168.486-4.666 2.01-.567.225-.595.442c-.03.243.275.339.69.47l.175.055c.408.133.958.288 1.243.294q.39.01.868-.32 3.269-2.206 3.374-2.23c.05-.012.12-.026.166.016s.042.12.037.141c-.03.129-1.227 1.241-1.846 1.817-.193.18-.33.307-.358.336a8 8 0 0 1-.188.186c-.38.366-.664.64.015 1.088.327.216.589.393.85.571.284.194.568.387.936.629q.14.092.27.187c.331.236.63.448.997.414.214-.02.435-.22.547-.82.265-1.417.786-4.486.906-5.751a1.4 1.4 0 0 0-.013-.315.34.34 0 0 0-.114-.217.53.53 0 0 0-.31-.093c-.3.005-.763.166-2.984 1.09"/></svg>
+        Telegram
+      </a>
+      <!-- X -->
+      <a class="sbtn x" href="https://x.com/IamPurkov" target="_blank" rel="noopener">
+        <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path fill="#fff" d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865z"/></svg>
+        X
+      </a>
+      <!-- Discord -->
+      <a class="sbtn dc" href="https://discordapp.com/users/456868548825055253" target="_blank" rel="noopener">
+        <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path fill="#fff" d="M13.545 2.907a13.2 13.2 0 0 0-3.257-1.011.05.05 0 0 0-.052.025c-.141.25-.297.577-.406.833a12.2 12.2 0 0 0-3.658 0 8 8 0 0 0-.412-.833.05.05 0 0 0-.052-.025c-1.125.194-2.22.534-3.257 1.011a.04.04 0 0 0-.021.018C.356 6.024-.213 9.047.066 12.032q.003.022.021.037a13.3 13.3 0 0 0 3.995 2.02.05.05 0 0 0 .056-.019q.463-.63.818-1.329a.05.05 0 0 0-.01-.059l-.018-.011a9 9 0 0 1-1.248-.595.05.05 0 0 1-.02-.066l.015-.019q.127-.095.248-.195a.05.05 0 0 1 .051-.007c2.619 1.196 5.454 1.196 8.041 0a.05.05 0 0 1 .053.007q.121.1.248.195a.05.05 0 0 1-.004.085 8 8 0 0 1-1.249.594.05.05 0 0 0-.03.03.05.05 0 0 0 .003.041c.24.465.515.909.817 1.329a.05.05 0 0 0 .056.019 13.2 13.2 0 0 0 4.001-2.02.05.05 0 0 0 .021-.037c.334-3.451-.559-6.449-2.366-9.106a.03.03 0 0 0-.02-.019"/></svg>
+        Discord
+      </a>
+      <!-- YouTube -->
+      <a class="sbtn yt" href="https://youtube.com/@Purkov" target="_blank" rel="noopener">
+        <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path fill="#fff" d="M8.051 1.999h.089c.822.003 4.987.033 6.11.335a2.01 2.01 0 0 1 1.415 1.42c.101.38.172.883.22 1.402l.01.104.022.26.008.104c.065.914.073 1.77.074 1.957v.075c-.001.194-.01 1.108-.082 2.06l-.008.105-.009.104c-.05.572-.124 1.14-.235 1.558a2.01 2.01 0 0 1-1.415 1.42c-1.16.312-5.569.334-6.18.335h-.142c-.309 0-1.587-.006-2.927-.052l-.17-.006-.087-.004-.171-.007-.171-.007c-1.11-.049-2.167-.128-2.654-.26a2.01 2.01 0 0 1-1.415-1.419c-.111-.417-.185-.986-.235-1.558L.09 9.82l-.008-.104A31 31 0 0 1 0 7.68v-.123c.002-.215.01-.958.064-1.778l.007-.103.003-.052.008-.104.022-.26.01-.104c.048-.519.119-1.023.22-1.402a2.01 2.01 0 0 1 1.415-1.42c.487-.13 1.544-.21 2.654-.26l.17-.007.172-.006.086-.003.171-.007A100 100 0 0 1 7.858 2zM6.4 5.209v4.818l4.157-2.408z"/></svg>
+        YouTube
+      </a>
+    </div>
+
+    <div class="lang" role="group" aria-label="Language">
+      <button id="btn-en" data-lang="en" class="active">EN</button>
+      <button id="btn-ru" data-lang="ru">RU</button>
+    </div>
+  </div>
+
+  <!-- Мобильная секция ссылок -->
+  <section id="links" class="mobile-only" data-grad="grad-1">
+    <div class="inner card">
+      <div class="mob-buttons">
+        <a class="sbtn lg tg" href="https://t.me/I_am_Captain_Pepe" target="_blank" rel="noopener">
+          <svg class="ico" viewBox="0 0 16 16"><path fill="#fff" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.287 5.906q-1.168.486-4.666 2.01-.567.225-.595.442c-.03.243.275.339.69.47l.175.055c.408.133.958.288 1.243.294q.39.01.868-.32 3.269-2.206 3.374-2.23c.05-.012.12-.026.166.016s.042.12.037.141c-.03.129-1.227 1.241-1.846 1.817-.193.18-.33.307-.358.336a8 8 0 0 1-.188.186c-.38.366-.664.64.015 1.088.327.216.589.393.85.571.284.194.568.387.936.629q.14.092.27.187c.331.236.63.448.997.414.214-.02.435-.22.547-.82.265-1.417.786-4.486.906-5.751a1.4 1.4 0 0 0-.013-.315.34.34 0 0 0-.114-.217.53.53 0 0 0-.31-.093c-.3.005-.763.166-2.984 1.09"/></svg>
+          Telegram
+        </a>
+        <a class="sbtn lg x" href="https://x.com/IamPurkov" target="_blank" rel="noopener">
+          <svg class="ico" viewBox="0 0 16 16"><path fill="#fff" d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865z"/></svg>
+          X
+        </a>
+        <a class="sbtn lg dc" href="https://discordapp.com/users/456868548825055253" target="_blank" rel="noopener">
+          <svg class="ico" viewBox="0 0 16 16"><path fill="#fff" d="M13.545 2.907a13.2 13.2 0 0 0-3.257-1.011.05.05 0 0 0-.052.025c-.141.25-.297.577-.406.833a12.2 12.2 0 0 0-3.658 0 8 8 0 0 0-.412-.833.05.05 0 0 0-.052-.025c-1.125.194-2.22.534-3.257 1.011a.04.04 0 0 0-.021.018C.356 6.024-.213 9.047.066 12.032q.003.022.021.037a13.3 13.3 0 0 0 3.995 2.02.05.05 0 0 0 .056-.019q.463-.63.818-1.329a.05.05 0 0 0-.01-.059l-.018-.011a9 9 0 0 1-1.248-.595.05.05 0 0 1-.02-.066l.015-.019q.127-.095.248-.195a.05.05 0 0 1 .051-.007c2.619 1.196 5.454 1.196 8.041 0a.05.05 0 0 1 .053.007q.121.1.248.195a.05.05 0 0 1-.004.085 8 8 0 0 1-1.249.594.05.05 0 0 0-.03.03.05.05 0 0 0 .003.041c.24.465.515.909.817 1.329a.05.05 0 0 0 .056.019 13.2 13.2 0 0 0 4.001-2.02.05.05 0 0 0 .021-.037c.334-3.451-.559-6.449-2.366-9.106a.03.03 0 0 0-.02-.019"/></svg>
+          Discord
+        </a>
+        <a class="sbtn lg yt" href="https://youtube.com/@Purkov" target="_blank" rel="noopener">
+          <svg class="ico" viewBox="0 0 16 16"><path fill="#fff" d="M8.051 1.999h.089c.822.003 4.987.033 6.11.335a2.01 2.01 0 0 1 1.415 1.42c.101.38.172.883.22 1.402l.01.104.022.26.008.104c.065.914.073 1.77.074 1.957v.075c-.001.194-.01 1.108-.082 2.06l-.008.105-.009.104c-.05.572-.124 1.14-.235 1.558a2.01 2.01 0 0 1-1.415 1.42c-1.16.312-5.569.334-6.18.335h-.142c-.309 0-1.587-.006-2.927-.052l-.17-.006-.087-.004-.171-.007-.171-.007c-1.11-.049-2.167-.128-2.654-.26a2.01 2.01 0 0 1-1.415-1.419c-.111-.417-.185-.986-.235-1.558L.09 9.82l-.008-.104A31 31 0 0 1 0 7.68v-.123c.002-.215.01-.958.064-1.778l.007-.103.003-.052.008-.104.022-.26.01-.104c.048-.519.119-1.023.22-1.402a2.01 2.01 0 0 1 1.415-1.42c.487-.13 1.544-.21 2.654-.26l.17-.007.172-.006.086-.003.171-.007A100 100 0 0 1 7.858 2zM6.4 5.209v4.818l4.157-2.408z"/></svg>
+          YouTube
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <!-- HERO -->
+    <section id="hero" data-grad="grad-1">
+      <div class="inner card grid two">
+        <div>
+          <div class="eyebrow" id="eyebrow">Enthusiast · Crypto investor</div>
+          <h1><span class="name" id="name">Evgeny</span><span class="aka" id="aka">Purkov · CaptainPepe</span></h1>
+          <p style="margin-top:10px;color:var(--muted)" id="lead">I write scripts, run nodes, automate routine, help communities, and make high-quality memes.</p>
+        </div>
+        <aside class="photo">
+          <img id="photo" alt="Evgeny Purkov / CaptainPepe" src="assets/img/photo.png"
+               onerror="this.remove();document.getElementById('ph').style.display='grid';">
+          <div id="ph" class="ph-placeholder" style="display:none"></div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- RIG -->
+    <section id="rig" data-grad="grad-2">
+      <div class="inner card grid two">
+        <div>
+          <h2 id="h-rig">Hardware</h2>
+          <p id="rig-1">Dual EPYC 7k62 · 512 GB RAM · RTX 3090; Xeon 24 cores · 64 GB RAM · RTX 3090. Plus MacBook M4 Pro 24 GB.</p>
+          <p id="rig-2">Enough to run GPU nodes, test ideas fast, and deliver.</p>
+        </div>
+        <div class="proj">
+          <p><strong id="focus-label">Focus</strong>: <span id="focus-text">GPU nodes · bots · log analysis · infrastructure</span></p>
+          <p><strong id="team-label">Team</strong>: <span id="team-text">“Бегунки Узлов” — infra, anti-sybil, automation.</span></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- WORK -->
+    <section id="work" data-grad="grad-3">
+      <div class="inner card">
+        <h2 id="h-work">Projects</h2>
+        <div class="proj"><p id="p1">Portal to Bitcoin (Bit Jelly). Gave participants &gt;10,000 gas tokens during testnet. Built Telegram bots for node tracking — ideas later adopted in the official Discord bot. Worked on anti-sybil team: wrote scripts and processed tens of GB of logs. Helped organize a meetup.</p></div>
+        <div class="proj"><p id="p2">Cysic (Mars Guru). Ran GPU nodes. Found vulnerabilities used in the attack and helped the team close those vectors.</p></div>
+        <div class="proj"><p id="p3">Dill. Ran nodes and handled event roles.</p></div>
+        <div class="proj"><p id="p4">Inference. Ran GPU nodes long-term and was at the top of the dashboard.</p></div>
+      </div>
+    </section>
+
+    <!-- TEAM -->
+    <section id="team" data-grad="grad-4">
+      <div class="inner card grid two">
+        <div><h2 id="h-team">Team</h2><p id="team-para">We join projects for infrastructure, anti-sybil, and automation.</p></div>
+        <div><h2 id="h-memes">Memes</h2><p id="memes-para">High-quality local memes for communities.</p></div>
+      </div>
+    </section>
+  </main>
+
+<script>
+  /* ===== фон: только видимые секции ===== */
+  const bgRoot=document.getElementById('bg'); let current=null;
+  function setGrad(cls){
+    if(!cls) return;
+    const layer=document.createElement('div'); layer.className='bg-layer '+cls;
+    bgRoot.appendChild(layer); requestAnimationFrame(()=>layer.classList.add('show'));
+    if(current){ const old=current; old.classList.remove('show'); setTimeout(()=>old.remove(),720); }
+    current=layer;
+  }
+  const visibleSections = () =>
+    Array.from(document.querySelectorAll('section[data-grad]'))
+      .filter(el => getComputedStyle(el).display !== 'none');
+
+  let SECTIONS = visibleSections();
+  setGrad(SECTIONS[0]?.getAttribute('data-grad') || 'grad-1');
+
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting && e.intersectionRatio>=0.55){
+        const g=e.target.getAttribute('data-grad'); if(g) setGrad(g);
+      }
+    });
+  },{threshold:[0.1,0.55,0.9]});
+  SECTIONS.forEach(s=>io.observe(s));
+
+  addEventListener('resize', ()=>{
+    const next = visibleSections();
+    if(next.length!==SECTIONS.length || next.some((el,i)=>el!==SECTIONS[i])){
+      SECTIONS.forEach(s=>io.unobserve(s));
+      SECTIONS = next;
+      SECTIONS.forEach(s=>io.observe(s));
+      setGrad(SECTIONS[0]?.getAttribute('data-grad') || 'grad-1');
+    }
+  });
+
+  /* ===== i18n ===== */
+  const RU={
+    eyebrow:'Энтузиаст · Криптоинвестор', name:'Евгений', aka:'Purkov · CaptainPepe',
+    lead:'Пишу скрипты, поднимаю ноды, автоматизирую рутину, помогаю комьюнити, делаю качественные мемы.',
+    h_rig:'Железо',
+    rig_1:'Dual EPYC 7k62 · 512 ГБ ОЗУ · RTX 3090; Xeon 24 ядра · 64 ГБ ОЗУ · RTX 3090. Плюс MacBook M4 Pro 24 ГБ.',
+    rig_2:'Этого хватает, чтобы держать GPU-ноды, быстро тестировать идеи и закрывать задачи.',
+    focus_label:'Фокус', focus_text:'GPU-ноды · боты · лог-анализ · инфраструктура',
+    team_label:'Команда', team_text:'«Бегунки Узлов» — инфраструктура, анти-сибилл, автоматизация.',
+    h_work:'Проекты',
+    p1:'Portal to Bitcoin (роль Bit Jelly). Раздал участникам >10 000 газ-токенов во время тестирования сети. Делал телеграм-ботов для отслеживания нод — идеи позже адаптировали в официальном Discord-боте. Участвовал в команде по сбриву сибиллов: сам писал скрипты и прогонял десятки гигабайт логов. Помогал организавать meetup встречу.',
+    p2:'Cysic (роль Mars Guru). Держал GPU-ноды. Нашёл уязвимости, через которые прошла атака, и помог команде закрыть эти векторы.',
+    p3:'Dill. Держал ноды и занимался ивент-ролями.',
+    p4:'Inference. Долго держал GPU-ноды и был в топе дашборда.',
+    h_team:'команда БЕГУНКИ УЗЛОВ', team_para:'«Бегунки Узлов». Подключаемся к проектам под инфраструктуру, анти-сибилл и автоматизацию.',
+    h_memes:'Мемы', memes_para:'Делаю локальные мемы — попадаю в контекст и тон сервера.'
+  };
+  const EN={
+    eyebrow:'Enthusiast · Crypto investor', name:'Evgeny', aka:'Purkov · CaptainPepe',
+    lead:'I write scripts, run nodes, automate routine, help communities, and make high-quality memes.',
+    h_rig:'Hardware',
+    rig_1:'Dual EPYC 7k62 · 512 GB RAM · RTX 3090; Xeon 24 cores · 64 GB RAM · RTX 3090. Plus MacBook M4 Pro 24 GB.',
+    rig_2:'Enough to run GPU nodes, test ideas fast, and deliver.',
+    focus_label:'Focus', focus_text:'GPU nodes · bots · log analysis · infrastructure',
+    team_label:'Team', team_text:'“Begunki Uzlov” — infra, anti-sybil, automation.',
+    h_work:'Projects',
+    p1:'Portal to Bitcoin (Bit Jelly). Gave participants >10,000 gas tokens during testnet. Built Telegram bots for node tracking — ideas later adopted in the official Discord bot. Worked on anti-sybil team: wrote scripts and processed tens of GB of logs. Helped organize a meetup.',
+    p2:'Cysic (Mars Guru). Ran GPU nodes. Found vulnerabilities used in the attack and helped the team close those vectors.',
+    p3:'Dill. Ran nodes and handled event roles.',
+    p4:'Inference. Ran GPU nodes long-term and was at the top of the dashboard.',
+    h_team:'Team — Begunki Uzlov', team_para:'Begunki Uzlov — we join projects for infrastructure, anti-sybil, and automation.',
+    h_memes:'Memes', memes_para:'High-quality local memes for communities.'
+  };
+  const ids=['eyebrow','name','aka','lead','h-rig','rig-1','rig-2','focus-label','focus-text','team-label','team-text','h-work','p1','p2','p3','p4','h-team','team-para','h-memes','memes-para'];
+  function applyLang(dict){
+    const map=[dict.eyebrow,dict.name,dict.aka,dict.lead,dict.h_rig,dict.rig_1,dict.rig_2,dict.focus_label,dict.focus_text,dict.team_label,dict.team_text,dict.h_work,dict.p1,dict.p2,dict.p3,dict.p4,dict.h_team,dict.team_para,dict.h_memes,dict.memes_para];
+    ids.forEach((id,i)=>{const el=document.getElementById(id); if(el) el.textContent=map[i];});
+    document.title=(dict===RU?'Евгений — Purkov / CaptainPepe':'Evgeny — Purkov / CaptainPepe');
+  }
+  const btnEn=document.getElementById('btn-en'), btnRu=document.getElementById('btn-ru');
+  function setLang(lang){
+    if(lang==='ru'){ applyLang(RU); btnEn.classList.remove('active'); btnRu.classList.add('active'); }
+    else { applyLang(EN); btnRu.classList.remove('active'); btnEn.classList.add('active'); }
+    localStorage.setItem('lang', lang); document.documentElement.lang=lang;
+  }
+  btnEn.onclick=()=>setLang('en');
+  btnRu.onclick=()=>setLang('ru');
+  (function initLang(){
+    const qp=new URLSearchParams(location.search);
+    const stored=localStorage.getItem('lang');
+    const lang= qp.get('lang')==='ru'?'ru' : (qp.get('lang')==='en'?'en' : (stored||'en'));
+    setLang(lang);
+  })();
+</script>
+</body>
+</html>
