@@ -14,6 +14,7 @@
   body{ margin:0; background:var(--bg); color:var(--fg);
         font:18px/1.65 ui-sans-serif,system-ui,-apple-system,Inter,Segoe UI,Roboto,Arial,sans-serif;
         -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility }
+  [hidden]{display:none!important}
 
   /* Фон-градиенты */
   #bg{position:fixed;inset:0;z-index:-2;overflow:hidden}
@@ -96,6 +97,7 @@
     .photo{justify-self:start;max-width:180px;width:60%}
     .social{display:none}
     .mobile-only{display:grid}
+    .ico{width:20px;height:20px} /* чётче SVG на мобилке */
   }
   .mob-buttons{display:grid;grid-template-columns:1fr 1fr;gap:12px}
   @media(max-width:460px){ .mob-buttons{grid-template-columns:1fr} }
@@ -169,7 +171,7 @@
           Discord
         </a>
         <a class="sbtn lg yt" href="https://youtube.com/@Purkov" target="_blank" rel="noopener">
-          <svg class="ico" viewBox="0 0 16 16"><path fill="#fff" d="M8.051 1.999h.089c.822.003 4.987.033 6.11.335a2.01 2.01 0 0 1 1.415 1.42c.101.38.172.883.22 1.402l.01.104.022.26.008.104c.065.914.073 1.77.074 1.957v.075c-.001.194-.01 1.108-.082 2.06l-.008.105-.009.104c-.05.572-.124 1.14-.235 1.558a2.01 2.01 0 0 1-1.415 1.42c-1.16.312-5.569.334-6.18.335h-.142c-.309 0-1.587-.006-2.927-.052l-.17-.006-.087-.004-.171-.007-.171-.007c-1.11-.049-2.167-.128-2.654-.26a2.01 2.01 0 0 1-1.415-1.419c-.111-.417-.185-.986-.235-1.558L.09 9.82l-.008-.104A31 31 0 0 1 0 7.68v-.123c.002-.215.01-.958.064-1.778l.007-.103.003-.052.008-.104.022-.26.01-.104c.048-.519.119-1.023.22-1.402a2.01 2.01 0 0 1 1.415-1.42c.487-.13 1.544-.21 2.654-.26l.17-.007.172-.006.086-.003.171-.007A100 100 0 0 1 7.858 2zM6.4 5.209v4.818л4.157-2.408z"/></svg>
+          <svg class="ico" viewBox="0 0 16 16"><path fill="#fff" d="M8.051 1.999h.089c.822.003 4.987.033 6.11.335a2.01 2.01 0 0 1 1.415 1.42c.101.38.172.883.22 1.402l.01.104.022.26.008.104c.065.914.073 1.77.074 1.957v.075c-.001.194-.01 1.108-.082 2.06l-.008.105-.009.104c-.05.572-.124 1.14-.235 1.558a2.01 2.01 0 0 1-1.415 1.42c-1.16.312-5.569.334-6.18.335h-.142c-.309 0-1.587-.006-2.927-.052l-.17-.006-.087-.004-.171-.007-.171-.007c-1.11-.049-2.167-.128-2.654-.26a2.01 2.01 0 0 1-1.415-1.419c-.111-.417-.185-.986-.235-1.558L.09 9.82l-.008-.104A31 31 0 0 1 0 7.68v-.123c.002-.215.01-.958.064-1.778l.007-.103.003-.052.008-.104.022-.26.01-.104c.048-.519.119-1.023.22-1.402a2.01 2.01 0 0 1 1.415-1.42c.487-.13 1.544-.21 2.654-.26l.17-.007.172-.006.086-.003.171-.007A100 100 0 0 1 7.858 2zM6.4 5.209v4.818l4.157-2.408z"/></svg>
           YouTube
         </a>
       </div>
@@ -246,7 +248,7 @@
     current=layer;
   }
   const visibleSections = () =>
-    Array.from(document.querySelectorAll('section[data-grad]'))
+    Array.from(document.querySelectorAll('section[data-grad], section.mobile-only'))
       .filter(el => getComputedStyle(el).display !== 'none');
 
   let SECTIONS = visibleSections();
@@ -353,6 +355,20 @@
 
     sections.forEach(s => io2.observe(s));
     addEventListener('resize', () => { sections = getSections(); updateBtn(); });
+
+    // скрывать кнопку у самого низа страницы (страховка на iOS/overscroll)
+    let ticking=false;
+    addEventListener('scroll', () => {
+      if(!ticking){
+        requestAnimationFrame(()=>{
+          const nearEnd = (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 2);
+          if(nearEnd){ activeIndex = sections.length - 1; }
+          updateBtn();
+          ticking=false;
+        });
+        ticking=true;
+      }
+    }, {passive:true});
 
     btn.addEventListener('click', () => {
       sections = getSections();
