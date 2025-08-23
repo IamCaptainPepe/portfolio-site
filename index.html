@@ -10,12 +10,12 @@
          --radius:22px; --shadow:0 14px 56px rgba(0,0,0,.45) }
   *{box-sizing:border-box}
   html,body{height:100%}
-  html{ scroll-behavior:smooth; scroll-snap-type:y mandatory;
+  html{ scroll-behavior:smooth; scroll-snap-type:y proximity }
   body{ margin:0; background:var(--bg); color:var(--fg);
         font:18px/1.65 ui-sans-serif,system-ui,-apple-system,Inter,Segoe UI,Roboto,Arial,sans-serif;
         -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility }
 
-  /* Фон */
+  /* Фон-градиенты */
   #bg{position:fixed;inset:0;z-index:-2;overflow:hidden}
   .bg-layer{position:absolute;inset:0;opacity:0;transition:opacity .7s ease}
   .bg-layer.show{opacity:1}
@@ -39,14 +39,15 @@
   /* Верхняя панель */
   .top{position:fixed;left:16px;right:16px;top:12px;z-index:20;display:flex;align-items:center;gap:14px;
        background:linear-gradient(180deg,rgba(20,26,44,.85),rgba(20,26,44,.35));
-       border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:8px 10px;backdrop-filter:blur(10px)}
+       border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:10px 12px;backdrop-filter:blur(10px)}
   .logo{display:flex;align-items:center;gap:10px;color:inherit;text-decoration:none}
-  /* .mark убран */
-  .avatar{width:22px;height:22px;border-radius:999px;object-fit:cover;transform:scaleX(-1);transform-origin:center;display:block;
+  .avatar{width:22px;height:22px;border-radius:999px;object-fit:cover;display:block;
+          transform:scaleX(-1);transform-origin:center;
           box-shadow:0 0 0 1px rgba(255,255,255,.28), 0 6px 14px rgba(0,0,0,.35)}
   .word{font-weight:800;letter-spacing:.2px}.word span{opacity:.72}
   .spacer{flex:1}
 
+  /* Соц-кнопки */
   .social{display:flex;gap:10px;flex-wrap:wrap}
   .sbtn{display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 12px;border-radius:999px;border:1px solid rgba(0,0,0,.25);
         color:#fff;font-weight:800;letter-spacing:.2px;white-space:nowrap;text-decoration:none;
@@ -65,9 +66,9 @@
   .lang button.active{border-color:#fff}
 
   /* Секции */
-  section{min-height:100svh;scroll-snap-align:start;display:grid;place-items:center;padding:128px 18px 68px}
+  section{min-height:100svh;scroll-snap-align:start;display:grid;place-items:center;padding:140px 18px 72px}
   .inner{max-width:1100px;width:100%}
-  .card{background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));border:1px solid rgba(255,255,255,.06);border-radius:var(--radius);box-shadow:var(--shadow);padding:28px}
+  .card{background:color-mix(in oklab,var(--card) 92%,black);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:28px}
   .eyebrow{color:var(--muted);letter-spacing:.14em;text-transform:uppercase;font-size:12px;margin-bottom:10px}
 
   h1{margin:0}
@@ -99,6 +100,17 @@
   .mob-buttons{display:grid;grid-template-columns:1fr 1fr;gap:12px}
   @media(max-width:460px){ .mob-buttons{grid-template-columns:1fr} }
   .sbtn.lg{height:56px;font-size:16px;justify-content:center}
+
+  /* Кнопка скролла (только мобилка) */
+  .mob-scroll-btn{
+    position:fixed;left:50%;transform:translateX(-50%);bottom:max(16px, calc(16px + env(safe-area-inset-bottom)));
+    z-index:40;display:none;align-items:center;justify-content:center;
+    width:56px;height:56px;border-radius:999px;border:1px solid rgba(255,255,255,.18);
+    background:linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.06));
+    color:#fff;box-shadow:0 8px 24px rgba(0,0,0,.45);backdrop-filter:blur(10px)
+  }
+  .mob-scroll-btn:active{ transform:translateX(-50%) translateY(1px); }
+  @media (max-width:900px){ .mob-scroll-btn{ display:flex; } }
 </style>
 </head>
 <body>
@@ -157,7 +169,7 @@
           Discord
         </a>
         <a class="sbtn lg yt" href="https://youtube.com/@Purkov" target="_blank" rel="noopener">
-          <svg class="ico" viewBox="0 0 16 16"><path fill="#fff" d="M8.051 1.999h.089c.822.003 4.987.033 6.11.335a2.01 2.01 0 0 1 1.415 1.42c.101.38.172.883.22 1.402l.01.104.022.26.008.104c.065.914.073 1.77.074 1.957v.075c-.001.194-.01 1.108-.082 2.06l-.008.105-.009.104c-.05.572-.124 1.14-.235 1.558a2.01 2.01 0 0 1-1.415 1.42c-1.16.312-5.569.334-6.18.335h-.142c-.309 0-1.587-.006-2.927-.052l-.17-.006-.087-.004-.171-.007-.171-.007c-1.11-.049-2.167-.128-2.654-.26a2.01 2.01 0 0 1-1.415-1.419c-.111-.417-.185-.986-.235-1.558L.09 9.82l-.008-.104A31 31 0 0 1 0 7.68v-.123c.002-.215.01-.958.064-1.778l.007-.103.003-.052.008-.104.022-.26.01-.104c.048-.519.119-1.023.22-1.402a2.01 2.01 0 0 1 1.415-1.42c.487-.13 1.544-.21 2.654-.26l.17-.007.172-.006.086-.003.171-.007A100 100 0 0 1 7.858 2zM6.4 5.209v4.818l4.157-2.408z"/></svg>
+          <svg class="ico" viewBox="0 0 16 16"><path fill="#fff" d="M8.051 1.999h.089c.822.003 4.987.033 6.11.335a2.01 2.01 0 0 1 1.415 1.42c.101.38.172.883.22 1.402l.01.104.022.26.008.104c.065.914.073 1.77.074 1.957v.075c-.001.194-.01 1.108-.082 2.06l-.008.105-.009.104c-.05.572-.124 1.14-.235 1.558a2.01 2.01 0 0 1-1.415 1.42c-1.16.312-5.569.334-6.18.335h-.142c-.309 0-1.587-.006-2.927-.052l-.17-.006-.087-.004-.171-.007-.171-.007c-1.11-.049-2.167-.128-2.654-.26a2.01 2.01 0 0 1-1.415-1.419c-.111-.417-.185-.986-.235-1.558L.09 9.82l-.008-.104A31 31 0 0 1 0 7.68v-.123c.002-.215.01-.958.064-1.778l.007-.103.003-.052.008-.104.022-.26.01-.104c.048-.519.119-1.023.22-1.402a2.01 2.01 0 0 1 1.415-1.42c.487-.13 1.544-.21 2.654-.26l.17-.007.172-.006.086-.003.171-.007A100 100 0 0 1 7.858 2zM6.4 5.209v4.818л4.157-2.408z"/></svg>
           YouTube
         </a>
       </div>
@@ -191,7 +203,7 @@
         </div>
         <div class="proj">
           <p><strong id="focus-label">Focus</strong>: <span id="focus-text">GPU nodes · bots · log analysis · infrastructure</span></p>
-          <p><strong id="team-label">Team</strong>: <span id="team-text">“Бегунки Узлов” — infra, anti-sybil, automation.</span></p>
+          <p><strong id="team-label">Team</strong>: <span id="team-text">“Begunki Uzlov” — infra, anti-sybil, automation.</span></p>
         </div>
       </div>
     </section>
@@ -210,11 +222,18 @@
     <!-- TEAM -->
     <section id="team" data-grad="grad-4">
       <div class="inner card grid two">
-        <div><h2 id="h-team">Team</h2><p id="team-para">We join projects for infrastructure, anti-sybil, and automation.</p></div>
+        <div><h2 id="h-team">Team — Begunki Uzlov</h2><p id="team-para">Begunki Uzlov — we join projects for infrastructure, anti-sybil, and automation.</p></div>
         <div><h2 id="h-memes">Memes</h2><p id="memes-para">High-quality local memes for communities.</p></div>
       </div>
     </section>
   </main>
+
+  <!-- Мобильная кнопка скролла -->
+  <button id="mobScroll" class="mob-scroll-btn" type="button" aria-label="Scroll to next section" hidden>
+    <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
 
 <script>
   /* ===== фон: только видимые секции ===== */
@@ -304,6 +323,44 @@
     const stored=localStorage.getItem('lang');
     const lang= qp.get('lang')==='ru'?'ru' : (qp.get('lang')==='en'?'en' : (stored||'en'));
     setLang(lang);
+  })();
+
+  /* === Mobile scroll button === */
+  (function(){
+    const btn = document.getElementById('mobScroll');
+    if(!btn) return;
+
+    const getSections = () =>
+      Array.from(document.querySelectorAll('section[data-grad], section.mobile-only'))
+        .filter(el => getComputedStyle(el).display !== 'none');
+
+    let sections = getSections();
+    let activeIndex = 0;
+
+    const updateBtn = () => {
+      sections = getSections();
+      btn.hidden = (activeIndex >= sections.length - 1);
+    };
+
+    const io2 = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting){
+          const i = sections.indexOf(e.target);
+          if(i !== -1){ activeIndex = i; updateBtn(); }
+        }
+      });
+    }, {threshold:0.6});
+
+    sections.forEach(s => io2.observe(s));
+    addEventListener('resize', () => { sections = getSections(); updateBtn(); });
+
+    btn.addEventListener('click', () => {
+      sections = getSections();
+      const next = sections[activeIndex + 1];
+      if(next) next.scrollIntoView({behavior:'smooth', block:'start'});
+    });
+
+    updateBtn();
   })();
 </script>
 </body>
