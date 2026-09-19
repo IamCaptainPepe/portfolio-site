@@ -1,383 +1,388 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Evgeny — Purkov / CaptainPepe</title>
-<meta name="color-scheme" content="dark">
-<style>
-  :root{ --bg:#0b1220; --fg:#ececf3; --muted:#a9afc5; --line:#24304a; --card:#0f1422;
-         --radius:22px; --shadow:0 14px 56px rgba(0,0,0,.45) }
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  html{ scroll-behavior:smooth; scroll-snap-type:y proximity }
-  body{ margin:0; background:var(--bg); color:var(--fg);
-        font:18px/1.65 ui-sans-serif,system-ui,-apple-system,Inter,Segoe UI,Roboto,Arial,sans-serif;
-        -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility }
-  [hidden]{display:none!important}
-
-  /* Фон-градиенты */
-  #bg{position:fixed;inset:0;z-index:-2;overflow:hidden}
-  .bg-layer{position:absolute;inset:0;opacity:0;transition:opacity .7s ease}
-  .bg-layer.show{opacity:1}
-  .grad-1{background:
-    radial-gradient(1200px 800px at 12% 12%, #243a77 0%, transparent 60%),
-    radial-gradient(1100px 760px at 84% 18%, #0a5a7d 0%, transparent 55%),
-    linear-gradient(180deg,#0b1220,#0c1322 60%,#0b1220)}
-  .grad-2{background:
-    radial-gradient(1100px 760px at 82% 20%, #1b2f6a 0%, transparent 60%),
-    radial-gradient(1000px 700px at 14% 78%, #0a5070 0%, transparent 60%),
-    linear-gradient(180deg,#0b1220,#0c1424)}
-  .grad-3{background:
-    radial-gradient(1100px 760px at 20% 80%, #3a1c6d 0%, transparent 55%),
-    radial-gradient(900px 640px at 82% 18%, #005a86 0%, transparent 55%),
-    linear-gradient(180deg,#0b1220,#0c1424)}
-  .grad-4{background:
-    radial-gradient(1200px 760px at 82% 76%, #1e355f 0%, transparent 60%),
-    radial-gradient(900px 620px at 14% 20%, #4a1768 0%, transparent 60%),
-    linear-gradient(180deg,#0b1220,#0c1424)}
-
-  /* Верхняя панель */
-  .top{position:fixed;left:16px;right:16px;top:12px;z-index:20;display:flex;align-items:center;gap:14px;
-       background:linear-gradient(180deg,rgba(20,26,44,.85),rgba(20,26,44,.35));
-       border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:10px 12px;backdrop-filter:blur(10px)}
-  .logo{display:flex;align-items:center;gap:10px;color:inherit;text-decoration:none}
-  .avatar{width:22px;height:22px;border-radius:999px;object-fit:cover;display:block;
-          transform:scaleX(-1);transform-origin:center;
-          box-shadow:0 0 0 1px rgba(255,255,255,.28), 0 6px 14px rgba(0,0,0,.35)}
-  .word{font-weight:800;letter-spacing:.2px}.word span{opacity:.72}
-  .spacer{flex:1}
-
-  /* Соц-кнопки */
-  .social{display:flex;gap:10px;flex-wrap:wrap}
-  .sbtn{display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 12px;border-radius:999px;border:1px solid rgba(0,0,0,.25);
-        color:#fff;font-weight:800;letter-spacing:.2px;white-space:nowrap;text-decoration:none;
-        transition:filter .15s,transform .15s;box-shadow:0 8px 20px rgba(0,0,0,.35)}
-  .sbtn:hover{filter:brightness(.96);transform:translateY(-1px)}
-  .ico{width:16px;height:16px;display:block}
-  .tg{background:#229ED9}
-  .x {background:#000; border-color:#3a3a3a; box-shadow:0 0 0 1px rgba(255,255,255,.08) inset, 0 10px 24px rgba(0,0,0,.45)}
-  .dc{background:#5865F2}
-  .yt{background:#FF0000}
-
-  .lang{display:flex;gap:8px;margin-left:auto}
-  .lang button{height:34px;padding:0 12px;border-radius:10px;border:1px solid rgba(255,255,255,.2);
-               background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.04));
-               color:#fff;font-weight:800;letter-spacing:.2px;cursor:pointer}
-  .lang button.active{border-color:#fff}
-
-  /* Секции */
-  section{min-height:100svh;scroll-snap-align:start;display:grid;place-items:center;padding:140px 18px 72px}
-  .inner{max-width:1100px;width:100%}
-  .card{background:color-mix(in oklab,var(--card) 92%,black);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:28px}
-  .eyebrow{color:var(--muted);letter-spacing:.14em;text-transform:uppercase;font-size:12px;margin-bottom:10px}
-
-  h1{margin:0}
-  .name{display:block;font-size:clamp(40px,6.2vw,62px);line-height:1.02;font-weight:800}
-  .aka{display:block;margin-top:6px;font-size:clamp(16px,2.6vw,22px);color:var(--muted);font-weight:700}
-  h2{margin:0 0 12px;font-size:clamp(18px,2.3vw,22px);letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
-  p{margin:0 0 12px}
-  .grid{display:grid;gap:14px}
-  .two{grid-template-columns:1.4fr .6fr}
-  .proj{padding:18px;border:1px solid var(--line);border-radius:16px;background:linear-gradient(180deg,rgba(255,255,255,.03),rgba(255,255,255,.015));box-shadow:0 0 0 1px rgba(255,255,255,.02) inset}
-  .proj + .proj{margin-top:10px}
-
-  .photo{width:60%;max-width:260px;aspect-ratio:1/1;border-radius:20px;overflow:hidden;border:1px solid var(--line);
-         background:linear-gradient(180deg,#1a2136,#0f1424);display:grid;place-items:center;justify-self:end}
-  .photo img{width:100%;height:100%;object-fit:cover;display:block}
-  .ph-placeholder{width:56%;height:56%;border-radius:50%;background:conic-gradient(from 210deg,#7b6cff,#00d2ff,#33ffa1,#7b6cff);filter:blur(10px);opacity:.7}
-
-  /* Мобилка */
-  .mobile-only{display:none}
-  @media(max-width:900px){
-    .top{left:8px;right:8px;top:8px;border-radius:12px;padding:8px 10px}
-    .lang button{height:30px;border-radius:8px;padding:0 10px}
-    section{padding:110px 14px 64px}
-    .two{grid-template-columns:1fr}
-    .photo{justify-self:start;max-width:180px;width:60%}
-    .social{display:none}
-    .mobile-only{display:grid}
-    .ico{width:20px;height:20px} /* чётче SVG на мобилке */
-  }
-  .mob-buttons{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  @media(max-width:460px){ .mob-buttons{grid-template-columns:1fr} }
-  .sbtn.lg{height:56px;font-size:16px;justify-content:center}
-
-  /* Кнопка скролла (только мобилка) */
-  .mob-scroll-btn{
-    position:fixed;left:50%;transform:translateX(-50%);bottom:max(16px, calc(16px + env(safe-area-inset-bottom)));
-    z-index:40;display:none;align-items:center;justify-content:center;
-    width:56px;height:56px;border-radius:999px;border:1px solid rgba(255,255,255,.18);
-    background:linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.06));
-    color:#fff;box-shadow:0 8px 24px rgba(0,0,0,.45);backdrop-filter:blur(10px)
-  }
-  .mob-scroll-btn:active{ transform:translateX(-50%) translateY(1px); }
-  @media (max-width:900px){ .mob-scroll-btn{ display:flex; } }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Evgeny Purkov — CaptainPepe | OG · CyRunner</title>
+  <meta name="description" content="Evgeny Purkov (CaptainPepe) — crypto operator, GPU node runner, CyRunner ambassador & community meme maker. Cysic OG · Portal to Bitcoin · Dill." />
+  <meta name="theme-color" content="#050816" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Evgeny Purkov — CaptainPepe | OG · CyRunner" />
+  <meta property="og:description" content="Crypto operator · GPU node runner · community + meme maker. Cysic OG & CyRunner Ambassador." />
+  <meta property="og:image" content="assets/img/pepe-beer.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Evgeny Purkov — CaptainPepe" />
+  <meta name="twitter:description" content="Crypto operator · GPU node runner · CyRunner ambassador." />
+  <meta name="twitter:image" content="assets/img/pepe-beer.png" />
+  <link rel="icon" href="assets/img/favicon.ico" sizes="any" />
+  <link rel="icon" type="image/png" href="assets/img/favicon.png" />
+  <link rel="apple-touch-icon" href="assets/img/apple-touch-icon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Syne:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
-<body>
-  <div id="bg"></div>
-
-  <!-- Верхняя панель -->
-  <div class="top">
-    <a href="#hero" class="logo" aria-label="Home">
-      <img class="avatar" src="assets/img/photo.png" alt="Evgeny avatar" onerror="this.remove()">
-      <div class="word">Purkov · <span>CaptainPepe</span></div>
-    </a>
-
-    <div class="social" aria-label="Contacts">
-      <!-- Telegram -->
-      <a class="sbtn tg" href="https://t.me/I_am_Captain_Pepe" target="_blank" rel="noopener">
-        <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path fill="#fff" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.287 5.906q-1.168.486-4.666 2.01-.567.225-.595.442c-.03.243.275.339.69.47l.175.055c.408.133.958.288 1.243.294q.39.01.868-.32 3.269-2.206 3.374-2.23c.05-.012.12-.026.166.016s.042.12.037.141c-.03.129-1.227 1.241-1.846 1.817-.193.18-.33.307-.358.336a8 8 0 0 1-.188.186c-.38.366-.664.64.015 1.088.327.216.589.393.85.571.284.194.568.387.936.629q.14.092.27.187c.331.236.63.448.997.414.214-.02.435-.22.547-.82.265-1.417.786-4.486.906-5.751a1.4 1.4 0 0 0-.013-.315.34.34 0 0 0-.114-.217.53.53 0 0 0-.31-.093c-.3.005-.763.166-2.984 1.09"/></svg>
-        Telegram
-      </a>
-      <!-- X -->
-      <a class="sbtn x" href="https://x.com/IamPurkov" target="_blank" rel="noopener">
-        <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path fill="#fff" d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865z"/></svg>
-        X
-      </a>
-      <!-- Discord -->
-      <a class="sbtn dc" href="https://discordapp.com/users/456868548825055253" target="_blank" rel="noopener">
-        <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path fill="#fff" d="M13.545 2.907a13.2 13.2 0 0 0-3.257-1.011.05.05 0 0 0-.052.025c-.141.25-.297.577-.406.833a12.2 12.2 0 0 0-3.658 0 8 8 0 0 0-.412-.833.05.05 0 0 0-.052-.025c-1.125.194-2.22.534-3.257 1.011a.04.04 0 0 0-.021.018C.356 6.024-.213 9.047.066 12.032q.003.022.021.037a13.3 13.3 0 0 0 3.995 2.02.05.05 0 0 0 .056-.019q.463-.63.818-1.329a.05.05 0 0 0-.01-.059l-.018-.011a9 9 0 0 1-1.248-.595.05.05 0 0 1-.02-.066l.015-.019q.127-.095.248-.195a.05.05 0 0 1 .051-.007c2.619 1.196 5.454 1.196 8.041 0a.05.05 0 0 1 .053.007q.121.1.248.195a.05.05 0 0 1-.004.085 8 8 0 0 1-1.249.594.05.05 0 0 0-.03.03.05.05 0 0 0 .003.041c.24.465.515.909.817 1.329a.05.05 0 0 0 .056.019 13.2 13.2 0 0 0 4.001-2.02.05.05 0 0 0 .021-.037c.334-3.451-.559-6.449-2.366-9.106a.03.03 0 0 0-.02-.019"/></svg>
-        Discord
-      </a>
-      <!-- YouTube -->
-      <a class="sbtn yt" href="https://youtube.com/@Purkov" target="_blank" rel="noopener">
-        <svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path fill="#fff" d="M8.051 1.999h.089c.822.003 4.987.033 6.11.335a2.01 2.01 0 0 1 1.415 1.42c.101.38.172.883.22 1.402l.01.104.022.26.008.104c.065.914.073 1.77.074 1.957v.075c-.001.194-.01 1.108-.082 2.06l-.008.105-.009.104c-.05.572-.124 1.14-.235 1.558a2.01 2.01 0 0 1-1.415 1.42c-1.16.312-5.569.334-6.18.335h-.142c-.309 0-1.587-.006-2.927-.052l-.17-.006-.087-.004-.171-.007-.171-.007c-1.11-.049-2.167-.128-2.654-.26a2.01 2.01 0 0 1-1.415-1.419c-.111-.417-.185-.986-.235-1.558L.09 9.82l-.008-.104A31 31 0 0 1 0 7.68v-.123c.002-.215.01-.958.064-1.778l.007-.103.003-.052.008-.104.022-.26.01-.104c.048-.519.119-1.023.22-1.402a2.01 2.01 0 0 1 1.415-1.42c.487-.13 1.544-.21 2.654-.26l.17-.007.172-.006.086-.003.171-.007A100 100 0 0 1 7.858 2zM6.4 5.209v4.818l4.157-2.408z"/></svg>
-        YouTube
-      </a>
-    </div>
-
-    <div class="lang" role="group" aria-label="Language">
-      <button id="btn-en" data-lang="en" class="active">EN</button>
-      <button id="btn-ru" data-lang="ru">RU</button>
-    </div>
+<body class="is-loading">
+  <div class="noise" aria-hidden="true"></div>
+  <div class="vignette" aria-hidden="true"></div>
+  <div class="aurora" aria-hidden="true">
+    <span class="aurora__blob aurora__blob--1"></span>
+    <span class="aurora__blob aurora__blob--2"></span>
+    <span class="aurora__blob aurora__blob--3"></span>
   </div>
+  <div class="cursor-glow" aria-hidden="true"></div>
 
-  <!-- Мобильная секция ссылок -->
-  <section id="links" class="mobile-only" data-grad="grad-1">
-    <div class="inner card">
-      <div class="mob-buttons">
-        <a class="sbtn lg tg" href="https://t.me/I_am_Captain_Pepe" target="_blank" rel="noopener">
-          <svg class="ico" viewBox="0 0 16 16"><path fill="#fff" d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M8.287 5.906q-1.168.486-4.666 2.01-.567.225-.595.442c-.03.243.275.339.69.47l.175.055c.408.133.958.288 1.243.294q.39.01.868-.32 3.269-2.206 3.374-2.23c.05-.012.12-.026.166.016s.042.12.037.141c-.03.129-1.227 1.241-1.846 1.817-.193.18-.33.307-.358.336a8 8 0 0 1-.188.186c-.38.366-.664.64.015 1.088.327.216.589.393.85.571.284.194.568.387.936.629q.14.092.27.187c.331.236.63.448.997.414.214-.02.435-.22.547-.82.265-1.417.786-4.486.906-5.751a1.4 1.4 0 0 0-.013-.315.34.34 0 0 0-.114-.217.53.53 0 0 0-.31-.093c-.3.005-.763.166-2.984 1.09"/></svg>
-          Telegram
-        </a>
-        <a class="sbtn lg x" href="https://x.com/IamPurkov" target="_blank" rel="noopener">
-          <svg class="ico" viewBox="0 0 16 16"><path fill="#fff" d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865z"/></svg>
-          X
-        </a>
-        <a class="sbtn lg dc" href="https://discordapp.com/users/456868548825055253" target="_blank" rel="noopener">
-          <svg class="ico" viewBox="0 0 16 16"><path fill="#fff" d="M13.545 2.907a13.2 13.2 0 0 0-3.257-1.011.05.05 0 0 0-.052.025c-.141.25-.297.577-.406.833a12.2 12.2 0 0 0-3.658 0 8 8 0 0 0-.412-.833.05.05 0 0 0-.052-.025c-1.125.194-2.22.534-3.257 1.011a.04.04 0 0 0-.021.018C.356 6.024-.213 9.047.066 12.032q.003.022.021.037a13.3 13.3 0 0 0 3.995 2.02.05.05 0 0 0 .056-.019q.463-.63.818-1.329a.05.05 0 0 0-.01-.059l-.018-.011a9 9 0 0 1-1.248-.595.05.05 0 0 1-.02-.066l.015-.019q.127-.095.248-.195a.05.05 0 0 1 .051-.007c2.619 1.196 5.454 1.196 8.041 0a.05.05 0 0 1 .053.007q.121.1.248.195a.05.05 0 0 1-.004.085 8 8 0 0 1-1.249.594.05.05 0 0 0-.03.03.05.05 0 0 0 .003.041c.24.465.515.909.817 1.329a.05.05 0 0 0 .056.019 13.2 13.2 0 0 0 4.001-2.02.05.05 0 0 0 .021-.037c.334-3.451-.559-6.449-2.366-9.106a.03.03 0 0 0-.02-.019"/></svg>
-          Discord
-        </a>
-        <a class="sbtn lg yt" href="https://youtube.com/@Purkov" target="_blank" rel="noopener">
-          <svg class="ico" viewBox="0 0 16 16"><path fill="#fff" d="M8.051 1.999h.089c.822.003 4.987.033 6.11.335a2.01 2.01 0 0 1 1.415 1.42c.101.38.172.883.22 1.402l.01.104.022.26.008.104c.065.914.073 1.77.074 1.957v.075c-.001.194-.01 1.108-.082 2.06l-.008.105-.009.104c-.05.572-.124 1.14-.235 1.558a2.01 2.01 0 0 1-1.415 1.42c-1.16.312-5.569.334-6.18.335h-.142c-.309 0-1.587-.006-2.927-.052l-.17-.006-.087-.004-.171-.007-.171-.007c-1.11-.049-2.167-.128-2.654-.26a2.01 2.01 0 0 1-1.415-1.419c-.111-.417-.185-.986-.235-1.558L.09 9.82l-.008-.104A31 31 0 0 1 0 7.68v-.123c.002-.215.01-.958.064-1.778l.007-.103.003-.052.008-.104.022-.26.01-.104c.048-.519.119-1.023.22-1.402a2.01 2.01 0 0 1 1.415-1.42c.487-.13 1.544-.21 2.654-.26l.17-.007.172-.006.086-.003.171-.007A100 100 0 0 1 7.858 2zM6.4 5.209v4.818l4.157-2.408z"/></svg>
-          YouTube
-        </a>
+  <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
+
+  <!-- NAV -->
+  <header class="nav" id="top">
+    <div class="nav__inner">
+      <a class="nav__brand" href="#top">
+        <img src="assets/img/pepe-nav-right.png" alt="" class="nav__avatar" width="36" height="36" />
+        <span class="nav__logo">Captain<span>Pepe</span></span>
+      </a>
+      <nav class="nav__links" aria-label="Primary">
+        <a href="#now" data-i18n="nav.now">Now</a>
+        <a href="#cysic" data-i18n="nav.cysic">Cysic</a>
+        <a href="#projects" data-i18n="nav.projects">Projects</a>
+        <a href="#team" data-i18n="nav.team">Team</a>
+        <a href="#contact" data-i18n="nav.contact">Contact</a>
+      </nav>
+      <div class="nav__actions">
+        <div class="nav__socials">
+          <a href="https://t.me/I_am_Captain_Pepe" target="_blank" rel="noopener noreferrer" aria-label="Telegram" class="icon-btn">
+            <img src="https://cdn.simpleicons.org/telegram/26A5E4" alt="" width="18" height="18" />
+          </a>
+          <a href="https://x.com/IamPurkov" target="_blank" rel="noopener noreferrer" aria-label="X" class="icon-btn">
+            <img src="https://cdn.simpleicons.org/x/FFFFFF" alt="" width="16" height="16" />
+          </a>
+          <a href="https://discordapp.com/users/456868548825055253" target="_blank" rel="noopener noreferrer" aria-label="Discord" class="icon-btn">
+            <img src="https://cdn.simpleicons.org/discord/5865F2" alt="" width="18" height="18" />
+          </a>
+          <a href="https://youtube.com/@Purkov" target="_blank" rel="noopener noreferrer" aria-label="YouTube" class="icon-btn">
+            <img src="https://cdn.simpleicons.org/youtube/FF0000" alt="" width="18" height="18" />
+          </a>
+        </div>
+        <div class="lang-toggle" role="group" aria-label="Language">
+          <button type="button" class="lang-btn is-active" data-lang="en" aria-pressed="true">EN</button>
+          <button type="button" class="lang-btn" data-lang="ru" aria-pressed="false">RU</button>
+        </div>
+        <button type="button" class="nav__burger" aria-label="Menu" aria-expanded="false" aria-controls="mobile-nav">
+          <span></span><span></span>
+        </button>
       </div>
     </div>
-  </section>
+    <div class="nav__mobile" id="mobile-nav" hidden>
+      <a href="#now" data-i18n="nav.now">Now</a>
+      <a href="#cysic" data-i18n="nav.cysic">Cysic</a>
+      <a href="#projects" data-i18n="nav.projects">Projects</a>
+      <a href="#team" data-i18n="nav.team">Team</a>
+      <a href="#contact" data-i18n="nav.contact">Contact</a>
+    </div>
+  </header>
 
-  <main>
+  <main id="main">
     <!-- HERO -->
-    <section id="hero" data-grad="grad-1">
-      <div class="inner card grid two">
+    <section class="hero section" id="hero">
+      <div class="hero__stage">
+        <div class="hero__copy">
+          <p class="hero__kicker hero-enter" data-enter="1" data-i18n="hero.kicker">OPERATOR · OG · CYRUNNER</p>
+          <h1 class="hero__name hero-enter" data-enter="2" id="hero-name" data-name-en="Evgeny" data-name-ru="Евгений" aria-label="Evgeny">
+            <span class="hero__name-text">Evgeny</span>
+          </h1>
+          <p class="hero__sub hero-enter" data-enter="3"><span data-i18n="hero.sub">Purkov · CaptainPepe</span></p>
+          <p class="hero__lead hero-enter" data-enter="4" data-i18n="hero.lead">I run GPU nodes, write the bots that keep them honest, grow communities, and ship memes for official pages.</p>
+          <div class="hero__ctas hero-enter" data-enter="5">
+            <a class="btn btn--primary magnetic" href="https://t.me/I_am_Captain_Pepe" target="_blank" rel="noopener noreferrer">
+              <img src="https://cdn.simpleicons.org/telegram/050816" alt="" width="18" height="18" />
+              <span data-i18n="cta.telegram">Telegram</span>
+            </a>
+            <a class="btn btn--secondary magnetic" href="https://x.com/IamPurkov" target="_blank" rel="noopener noreferrer">
+              <img src="https://cdn.simpleicons.org/x/FFFFFF" alt="" width="16" height="16" />
+              <span data-i18n="cta.x">X</span>
+            </a>
+          </div>
+          <ul class="hero__pills hero-enter" data-enter="6" aria-label="Tags">
+            <li>OG</li>
+            <li>CyRunner</li>
+            <li data-i18n="pill.gpu">GPU ops</li>
+            <li data-i18n="pill.memes">Memes</li>
+          </ul>
+        </div>
+
+        <div class="hero__visual hero-enter" data-enter="3" aria-hidden="true">
+          <div class="hero__glow"></div>
+          <div class="hero__pepe-wrap">
+            <img
+              class="hero__pepe"
+              src="assets/img/pepe-beer.png"
+              alt="CaptainPepe — pirate Pepe with beer"
+              width="1024"
+              height="1024"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- NOW / STACK -->
+    <section class="section now section-motion" id="now" data-section>
+      <div class="section__head reveal">
+        <p class="eyebrow" data-i18n="now.eyebrow">Infrastructure</p>
+        <h2 data-i18n="now.title">Now / Stack</h2>
+        <p class="section__desc" data-i18n="now.desc">Hardware that ships nodes. Tools that keep the fleet honest.</p>
+      </div>
+
+      <div class="nodes-bleed">
+        <div class="nodes-bleed__inner">
+          <div class="now__grid reveal-stagger">
+            <article class="glass-card reveal tilt" data-tilt>
+              <div class="card__icon"><i data-lucide="server"></i></div>
+              <h3 data-i18n="hw.epyc.title">Dual EPYC</h3>
+              <p class="mono">AMD EPYC 7K62 ×2</p>
+              <ul class="spec-list">
+                <li><span data-i18n="hw.ram">RAM</span><strong>512 GB</strong></li>
+                <li><span data-i18n="hw.gpu">GPU</span><strong>RTX 3090</strong></li>
+              </ul>
+            </article>
+            <article class="glass-card reveal tilt" data-tilt>
+              <div class="card__icon"><i data-lucide="hard-drive"></i></div>
+              <h3 data-i18n="hw.xeon.title">Xeon Workhorse</h3>
+              <p class="mono">Intel Xeon · 24 cores</p>
+              <ul class="spec-list">
+                <li><span data-i18n="hw.ram">RAM</span><strong>64 GB</strong></li>
+                <li><span data-i18n="hw.gpu">GPU</span><strong>RTX 3090</strong></li>
+              </ul>
+            </article>
+            <article class="glass-card reveal tilt" data-tilt>
+              <div class="card__icon"><i data-lucide="laptop"></i></div>
+              <h3 data-i18n="hw.mac.title">MacBook</h3>
+              <p class="mono">Apple M4 Pro</p>
+              <ul class="spec-list">
+                <li><span data-i18n="hw.ram">RAM</span><strong>24 GB</strong></li>
+                <li><span data-i18n="hw.role">Role</span><strong data-i18n="hw.mac.role">Daily driver</strong></li>
+              </ul>
+            </article>
+          </div>
+        </div>
+      </div>
+
+      <div class="skills reveal">
+        <h3 class="skills__title" data-i18n="skills.title">Skills & tools</h3>
+        <ul class="skills__grid">
+          <li class="skill-chip skill-chip--davinci">
+            <img src="assets/img/davinci-resolve.png" alt="" width="22" height="22" class="skill-chip__mark" />
+            <span>DaVinci Resolve</span>
+          </li>
+          <li class="skill-chip">
+            <i data-lucide="brain"></i>
+            <span data-i18n="skills.llms">Local LLMs</span>
+          </li>
+          <li class="skill-chip">
+            <i data-lucide="bot"></i>
+            <span data-i18n="skills.ai">Local AI assistant</span>
+          </li>
+          <li class="skill-chip">
+            <i data-lucide="sparkles"></i>
+            <span>ComfyUI / local gen</span>
+          </li>
+          <li class="skill-chip">
+            <img src="https://cdn.simpleicons.org/python/3776AB" alt="" width="22" height="22" />
+            <span data-i18n="skills.scripts">Scripts / bots</span>
+          </li>
+          <li class="skill-chip">
+            <img src="https://cdn.simpleicons.org/nvidia/76B900" alt="" width="22" height="22" />
+            <span data-i18n="skills.nodes">Node ops</span>
+          </li>
+          <li class="skill-chip">
+            <i data-lucide="terminal"></i>
+            <span data-i18n="skills.logs">Log analysis</span>
+          </li>
+          <li class="skill-chip">
+            <i data-lucide="shield-check"></i>
+            <span data-i18n="skills.sybil">Anti-sybil</span>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- CYSIC FLAGSHIP -->
+    <section class="section cysic section-motion" id="cysic" data-section>
+      <div class="section__head reveal">
+        <p class="eyebrow" data-i18n="cysic.eyebrow">Flagship</p>
+        <h2 data-i18n="cysic.title">Cysic — OG & CyRunner</h2>
+      </div>
+      <article class="flagship glass-card reveal tilt" data-tilt>
+        <div class="flagship__media">
+          <div class="flagship__portrait-wrap flagship__portrait-wrap--duo">
+            <img
+              src="assets/img/pepe-duo-bust.png"
+              alt="CaptainPepe duo — pirate Pepe and ZK Endgame (bust)"
+              class="flagship__portrait flagship__portrait--duo"
+              width="983"
+              height="1026"
+              loading="lazy"
+            />
+            <div class="flagship__portrait-shine" aria-hidden="true"></div>
+            <span class="flagship__banner-cap" data-i18n="cysic.banner.cap">CyRunner Ambassador · Duo</span>
+          </div>
+          <div class="flagship__og-pill" aria-hidden="true">
+            <span class="flagship__og-pill-dot"></span>
+            <span>OG · CyRunner</span>
+          </div>
+        </div>
+        <div class="flagship__body">
+          <div class="badge-row">
+            <span class="badge">OG</span>
+            <span class="badge badge--accent">CyRunner</span>
+            <span class="badge" data-i18n="badge.community">Community</span>
+            <span class="badge" data-i18n="badge.memes">Official memes</span>
+            <span class="badge" data-i18n="badge.gpu">GPU nodes</span>
+          </div>
+          <p class="flagship__text" data-i18n="cysic.body">Cysic — OG & CyRunner Ambassador. Community + official memes for @cysic_xyz. GPU nodes. Found attack vectors and helped the team shut them down.</p>
+          <div class="flagship__links">
+            <a class="btn btn--primary magnetic" href="https://cysic.xyz/" target="_blank" rel="noopener noreferrer">
+              <span data-i18n="cysic.link.site">cysic.xyz</span>
+              <i data-lucide="arrow-up-right"></i>
+            </a>
+            <a class="btn btn--secondary magnetic" href="https://x.com/cysic_xyz" target="_blank" rel="noopener noreferrer">
+              <img src="https://cdn.simpleicons.org/x/FFFFFF" alt="" width="14" height="14" />
+              <span>@cysic_xyz</span>
+            </a>
+            <a class="btn btn--secondary magnetic" href="https://x.com/IamPurkov" target="_blank" rel="noopener noreferrer">
+              <img src="https://cdn.simpleicons.org/x/FFFFFF" alt="" width="14" height="14" />
+              <span>@IamPurkov</span>
+            </a>
+            <a class="text-link" href="https://cysic.xyz/blog/cyrunners-ambassador-program/" target="_blank" rel="noopener noreferrer" data-i18n="cysic.link.program">Ambassador program →</a>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <!-- PROJECTS — typography only, no brand marks -->
+    <section class="section projects section-motion" id="projects" data-section>
+      <div class="section__head reveal">
+        <p class="eyebrow" data-i18n="projects.eyebrow">Selected work</p>
+        <h2 data-i18n="projects.title">Projects</h2>
+        <p class="section__desc" data-i18n="projects.desc">Nodes, bots, anti-sybil, community — no invented trophies.</p>
+      </div>
+      <div class="projects__grid reveal-stagger">
+        <article class="project-card glass-card reveal tilt" data-tilt>
+          <p class="project-card__index">01</p>
+          <h3>Cysic</h3>
+          <p class="project-card__aka">CyRunner · OG</p>
+          <p data-i18n="cysic.project.body">Ambassador + GPU nodes. Community memes for the official page. Attack-vector hunting with the team.</p>
+          <div class="badge-row">
+            <span class="badge badge--accent">OG</span>
+            <span class="badge">CyRunner</span>
+            <span class="badge" data-i18n="badge.gpu">GPU nodes</span>
+          </div>
+          <a class="text-link" href="https://cysic.xyz/" target="_blank" rel="noopener noreferrer">cysic.xyz →</a>
+        </article>
+
+        <article class="project-card glass-card reveal tilt" data-tilt>
+          <p class="project-card__index">02</p>
+          <h3 data-i18n="ptb.title">Portal to Bitcoin</h3>
+          <p class="project-card__aka">Bit Jelly</p>
+          <p data-i18n="ptb.body">&gt;10k gas tokens. Telegram node bots (ideas later used in the official Discord bot). Anti-sybil + tens of GB of logs. Meetup.</p>
+          <div class="badge-row">
+            <span class="badge" data-i18n="ptb.b1">Gas tokens</span>
+            <span class="badge" data-i18n="ptb.b2">Node bots</span>
+            <span class="badge" data-i18n="ptb.b3">Anti-sybil</span>
+          </div>
+          <a class="text-link" href="https://portaltobitcoin.com/" target="_blank" rel="noopener noreferrer">portaltobitcoin.com →</a>
+        </article>
+
+        <article class="project-card glass-card reveal tilt" data-tilt>
+          <p class="project-card__index">03</p>
+          <h3 data-i18n="dill.title">Dill</h3>
+          <p class="project-card__aka">dill.xyz</p>
+          <p data-i18n="dill.body">Nodes and event roles — keeping the network honest from the ground up.</p>
+          <div class="badge-row">
+            <span class="badge" data-i18n="dill.b1">Nodes</span>
+            <span class="badge" data-i18n="dill.b2">Events</span>
+          </div>
+          <a class="text-link" href="https://dill.xyz/" target="_blank" rel="noopener noreferrer">dill.xyz →</a>
+        </article>
+
+        <article class="project-card glass-card reveal tilt" data-tilt>
+          <p class="project-card__index">04</p>
+          <h3 data-i18n="inf.title">Inference</h3>
+          <p class="project-card__aka" data-i18n="inf.aka">GPU fleet</p>
+          <p data-i18n="inf.body">Long-term GPU nodes — consistently near the top of the dashboard.</p>
+          <div class="badge-row">
+            <span class="badge" data-i18n="inf.b1">GPU nodes</span>
+            <span class="badge" data-i18n="inf.b2">Top dashboard</span>
+          </div>
+          <a class="text-link" href="https://inference.net/" target="_blank" rel="noopener noreferrer">inference.net →</a>
+        </article>
+      </div>
+    </section>
+
+    <!-- TEAM / Node runners — full-bleed band -->
+    <section class="team-bleed section-motion" id="team" data-section>
+      <div class="team-bleed__inner">
+        <div class="section__head reveal">
+          <p class="eyebrow" data-i18n="team.eyebrow">Crew</p>
+          <h2 data-i18n="team.title">Begunki Uzlov</h2>
+          <p class="section__desc" data-i18n="team.desc">Infra, anti-sybil, automation — the team behind the nodes.</p>
+        </div>
+        <div class="team__card glass-card reveal tilt" data-tilt>
+          <div class="team__icon"><i data-lucide="users"></i></div>
+          <div>
+            <h3 data-i18n="team.name">Begunki Uzlov</h3>
+            <p data-i18n="team.body">A tight crew focused on infrastructure, anti-sybil detection, and automation that keeps GPU and chain nodes reliable at scale.</p>
+            <ul class="team__tags">
+              <li data-i18n="team.t1">Infrastructure</li>
+              <li data-i18n="team.t2">Anti-sybil</li>
+              <li data-i18n="team.t3">Automation</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section class="section contact section-motion" id="contact" data-section>
+      <div class="contact__strip glass-card reveal">
         <div>
-          <div class="eyebrow" id="eyebrow">Enthusiast · Crypto investor</div>
-          <h1><span class="name" id="name">Evgeny</span><span class="aka" id="aka">Purkov · CaptainPepe</span></h1>
-          <p style="margin-top:10px;color:var(--muted)" id="lead">I write scripts, run nodes, automate routine, help communities, and make high-quality memes.</p>
+          <p class="eyebrow" data-i18n="contact.eyebrow">Say hello</p>
+          <h2 data-i18n="contact.title">Let's talk nodes & memes</h2>
+          <p data-i18n="contact.desc">Telegram is fastest. X for public signals. Discord for DMs.</p>
         </div>
-        <aside class="photo">
-          <img id="photo" alt="Evgeny Purkov / CaptainPepe" src="assets/img/photo.png"
-               onerror="this.remove();document.getElementById('ph').style.display='grid';">
-          <div id="ph" class="ph-placeholder" style="display:none"></div>
-        </aside>
-      </div>
-    </section>
-
-    <!-- RIG -->
-    <section id="rig" data-grad="grad-2">
-      <div class="inner card grid two">
-        <div>
-          <h2 id="h-rig">Hardware</h2>
-          <p id="rig-1">Dual EPYC 7k62 · 512 GB RAM · RTX 3090; Xeon 24 cores · 64 GB RAM · RTX 3090. Plus MacBook M4 Pro 24 GB.</p>
-          <p id="rig-2">Enough to run GPU nodes, test ideas fast, and deliver.</p>
+        <div class="contact__btns">
+          <a class="btn btn--primary magnetic" href="https://t.me/I_am_Captain_Pepe" target="_blank" rel="noopener noreferrer">
+            <img src="https://cdn.simpleicons.org/telegram/050816" alt="" width="18" height="18" />
+            Telegram
+          </a>
+          <a class="btn btn--secondary magnetic" href="https://x.com/IamPurkov" target="_blank" rel="noopener noreferrer">
+            <img src="https://cdn.simpleicons.org/x/FFFFFF" alt="" width="16" height="16" />
+            X / Twitter
+          </a>
+          <a class="btn btn--ghost magnetic" href="https://discordapp.com/users/456868548825055253" target="_blank" rel="noopener noreferrer">
+            <img src="https://cdn.simpleicons.org/discord/5865F2" alt="" width="18" height="18" />
+            Discord
+          </a>
+          <a class="btn btn--ghost magnetic" href="https://youtube.com/@Purkov" target="_blank" rel="noopener noreferrer">
+            <img src="https://cdn.simpleicons.org/youtube/FF0000" alt="" width="18" height="18" />
+            YouTube
+          </a>
         </div>
-        <div class="proj">
-          <p><strong id="focus-label">Focus</strong>: <span id="focus-text">GPU nodes · bots · log analysis · infrastructure</span></p>
-          <p><strong id="team-label">Team</strong>: <span id="team-text">“Begunki Uzlov” — infra, anti-sybil, automation.</span></p>
-        </div>
-      </div>
-    </section>
-
-    <!-- WORK -->
-    <section id="work" data-grad="grad-3">
-      <div class="inner card">
-        <h2 id="h-work">Projects</h2>
-        <div class="proj"><p id="p1">Portal to Bitcoin (Bit Jelly). Gave participants &gt;10,000 gas tokens during testnet. Built Telegram bots for node tracking — ideas later adopted in the official Discord bot. Worked on anti-sybil team: wrote scripts and processed tens of GB of logs. Helped organize a meetup.</p></div>
-        <div class="proj"><p id="p2">Cysic (Mars Guru). Ran GPU nodes. Found vulnerabilities used in the attack and helped the team close those vectors.</p></div>
-        <div class="proj"><p id="p3">Dill. Ran nodes and handled event roles.</p></div>
-        <div class="proj"><p id="p4">Inference. Ran GPU nodes long-term and was at the top of the dashboard.</p></div>
-      </div>
-    </section>
-
-    <!-- TEAM -->
-    <section id="team" data-grad="grad-4">
-      <div class="inner card grid two">
-        <div><h2 id="h-team">Team — Begunki Uzlov</h2><p id="team-para">Begunki Uzlov — we join projects for infrastructure, anti-sybil, and automation.</p></div>
-        <div><h2 id="h-memes">Memes</h2><p id="memes-para">High-quality local memes for communities.</p></div>
       </div>
     </section>
   </main>
 
-  <!-- Мобильная кнопка скролла -->
-  <button id="mobScroll" class="mob-scroll-btn" type="button" aria-label="Scroll to next section" hidden>
-    <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-  </button>
+  <footer class="footer">
+    <div class="footer__inner">
+      <div class="footer__brand">
+        <img src="assets/img/pepe-nav-right.png" alt="" width="28" height="28" />
+        <span data-i18n="footer.brand">Evgeny Purkov · CaptainPepe</span>
+      </div>
+      <p class="footer__copy">© 2026 · <span data-i18n="footer.note">Built with vanilla HTML/CSS/JS</span></p>
+    </div>
+  </footer>
 
-<script>
-  /* ===== фон: только видимые секции ===== */
-  const bgRoot=document.getElementById('bg'); let current=null;
-  function setGrad(cls){
-    if(!cls) return;
-    const layer=document.createElement('div'); layer.className='bg-layer '+cls;
-    bgRoot.appendChild(layer); requestAnimationFrame(()=>layer.classList.add('show'));
-    if(current){ const old=current; old.classList.remove('show'); setTimeout(()=>old.remove(),720); }
-    current=layer;
-  }
-  const visibleSections = () =>
-    Array.from(document.querySelectorAll('section[data-grad], section.mobile-only'))
-      .filter(el => getComputedStyle(el).display !== 'none');
-
-  let SECTIONS = visibleSections();
-  setGrad(SECTIONS[0]?.getAttribute('data-grad') || 'grad-1');
-
-  const io = new IntersectionObserver((entries)=>{
-    entries.forEach(e=>{
-      if(e.isIntersecting && e.intersectionRatio>=0.55){
-        const g=e.target.getAttribute('data-grad'); if(g) setGrad(g);
-      }
-    });
-  },{threshold:[0.1,0.55,0.9]});
-  SECTIONS.forEach(s=>io.observe(s));
-
-  addEventListener('resize', ()=>{
-    const next = visibleSections();
-    if(next.length!==SECTIONS.length || next.some((el,i)=>el!==SECTIONS[i])){
-      SECTIONS.forEach(s=>io.unobserve(s));
-      SECTIONS = next;
-      SECTIONS.forEach(s=>io.observe(s));
-      setGrad(SECTIONS[0]?.getAttribute('data-grad') || 'grad-1');
-    }
-  });
-
-  /* ===== i18n ===== */
-  const RU={
-    eyebrow:'Энтузиаст · Криптоинвестор', name:'Евгений', aka:'Purkov · CaptainPepe',
-    lead:'Пишу скрипты, поднимаю ноды, автоматизирую рутину, помогаю комьюнити, делаю качественные мемы.',
-    h_rig:'Железо',
-    rig_1:'Dual EPYC 7k62 · 512 ГБ ОЗУ · RTX 3090; Xeon 24 ядра · 64 ГБ ОЗУ · RTX 3090. Плюс MacBook M4 Pro 24 ГБ.',
-    rig_2:'Этого хватает, чтобы держать GPU-ноды, быстро тестировать идеи и закрывать задачи.',
-    focus_label:'Фокус', focus_text:'GPU-ноды · боты · лог-анализ · инфраструктура',
-    team_label:'Команда', team_text:'«Бегунки Узлов» — инфраструктура, анти-сибилл, автоматизация.',
-    h_work:'Проекты',
-    p1:'Portal to Bitcoin (роль Bit Jelly). Раздал участникам >10 000 газ-токенов во время тестирования сети. Делал телеграм-ботов для отслеживания нод — идеи позже адаптировали в официальном Discord-боте. Участвовал в команде по сбриву сибиллов: сам писал скрипты и прогонял десятки гигабайт логов. Помогал организавать meetup встречу.',
-    p2:'Cysic (роль Zenith-OG). Держал GPU-ноды. Нашёл уязвимости, через которые прошла атака, и помог команде закрыть эти векторы.',
-    p3:'Dill. Держал ноды и занимался ивент-ролями.',
-    p4:'Inference. Долго держал GPU-ноды и был в топе дашборда.',
-    h_team:'команда БЕГУНКИ УЗЛОВ', team_para:'«Бегунки Узлов». Подключаемся к проектам под инфраструктуру, анти-сибилл и автоматизацию.',
-    h_memes:'Мемы', memes_para:'Делаю локальные мемы — попадаю в контекст и тон сервера.'
-  };
-  const EN={
-    eyebrow:'Enthusiast · Crypto investor', name:'Evgeny', aka:'Purkov · CaptainPepe',
-    lead:'I write scripts, run nodes, automate routine, help communities, and make high-quality memes.',
-    h_rig:'Hardware',
-    rig_1:'Dual EPYC 7k62 · 512 GB RAM · RTX 3090; Xeon 24 cores · 64 GB RAM · RTX 3090. Plus MacBook M4 Pro 24 GB.',
-    rig_2:'Enough to run GPU nodes, test ideas fast, and deliver.',
-    focus_label:'Focus', focus_text:'GPU nodes · bots · log analysis · infrastructure',
-    team_label:'Team', team_text:'“Begunki Uzlov” — infra, anti-sybil, automation.',
-    h_work:'Projects',
-    p1:'Portal to Bitcoin (Bit Jelly). Gave participants >10,000 gas tokens during testnet. Built Telegram bots for node tracking — ideas later adopted in the official Discord bot. Worked on anti-sybil team: wrote scripts and processed tens of GB of logs. Helped organize a meetup.',
-    p2:'Cysic (Zenith-OG). Ran GPU nodes. Found vulnerabilities used in the attack and helped the team close those vectors.',
-    p3:'Dill. Ran nodes and handled event roles.',
-    p4:'Inference. Ran GPU nodes long-term and was at the top of the dashboard.',
-    h_team:'Team — Begunki Uzlov', team_para:'Begunki Uzlov — we join projects for infrastructure, anti-sybil, and automation.',
-    h_memes:'Memes', memes_para:'High-quality local memes for communities.'
-  };
-  const ids=['eyebrow','name','aka','lead','h-rig','rig-1','rig-2','focus-label','focus-text','team-label','team-text','h-work','p1','p2','p3','p4','h-team','team-para','h-memes','memes-para'];
-  function applyLang(dict){
-    const map=[dict.eyebrow,dict.name,dict.aka,dict.lead,dict.h_rig,dict.rig_1,dict.rig_2,dict.focus_label,dict.focus_text,dict.team_label,dict.team_text,dict.h_work,dict.p1,dict.p2,dict.p3,dict.p4,dict.h_team,dict.team_para,dict.h_memes,dict.memes_para];
-    ids.forEach((id,i)=>{const el=document.getElementById(id); if(el) el.textContent=map[i];});
-    document.title=(dict===RU?'Евгений — Purkov / CaptainPepe':'Evgeny — Purkov / CaptainPepe');
-  }
-  const btnEn=document.getElementById('btn-en'), btnRu=document.getElementById('btn-ru');
-  function setLang(lang){
-    if(lang==='ru'){ applyLang(RU); btnEn.classList.remove('active'); btnRu.classList.add('active'); }
-    else { applyLang(EN); btnRu.classList.remove('active'); btnEn.classList.add('active'); }
-    localStorage.setItem('lang', lang); document.documentElement.lang=lang;
-  }
-  btnEn.onclick=()=>setLang('en');
-  btnRu.onclick=()=>setLang('ru');
-  (function initLang(){
-    const qp=new URLSearchParams(location.search);
-    const stored=localStorage.getItem('lang');
-    const lang= qp.get('lang')==='ru'?'ru' : (qp.get('lang')==='en'?'en' : (stored||'en'));
-    setLang(lang);
-  })();
-
-  /* === Mobile scroll button === */
-  (function(){
-    const btn = document.getElementById('mobScroll');
-    if(!btn) return;
-
-    const getSections = () =>
-      Array.from(document.querySelectorAll('section[data-grad], section.mobile-only'))
-        .filter(el => getComputedStyle(el).display !== 'none');
-
-    let sections = getSections();
-    let activeIndex = 0;
-
-    const updateBtn = () => {
-      sections = getSections();
-      btn.hidden = (activeIndex >= sections.length - 1);
-    };
-
-    const io2 = new IntersectionObserver((entries)=>{
-      entries.forEach(e=>{
-        if(e.isIntersecting){
-          const i = sections.indexOf(e.target);
-          if(i !== -1){ activeIndex = i; updateBtn(); }
-        }
-      });
-    }, {threshold:0.6});
-
-    sections.forEach(s => io2.observe(s));
-    addEventListener('resize', () => { sections = getSections(); updateBtn(); });
-
-    // скрывать кнопку у самого низа страницы (страховка на iOS/overscroll)
-    let ticking=false;
-    addEventListener('scroll', () => {
-      if(!ticking){
-        requestAnimationFrame(()=>{
-          const nearEnd = (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 2);
-          if(nearEnd){ activeIndex = sections.length - 1; }
-          updateBtn();
-          ticking=false;
-        });
-        ticking=true;
-      }
-    }, {passive:true});
-
-    btn.addEventListener('click', () => {
-      sections = getSections();
-      const next = sections[activeIndex + 1];
-      if(next) next.scrollIntoView({behavior:'smooth', block:'start'});
-    });
-
-    updateBtn();
-  })();
-</script>
+  <script src="https://unpkg.com/lucide@0.469.0"></script>
+  <script src="app.js"></script>
 </body>
 </html>
