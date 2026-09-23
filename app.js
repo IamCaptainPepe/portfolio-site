@@ -496,6 +496,105 @@
     map.forEach((_a, sec) => io.observe(sec));
   }
 
+  /* ---- Starfield — subtle drifting stars, scroll parallax ---- */
+  function initStarfield() {
+    const canvas = document.getElementById("starfield");
+    if (!canvas || reduceMotion) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    let w = 0, h = 0, dpr = 1, stars = [], raf = 0, running = true;
+
+    function build() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = window.innerWidth;
+      h = window.innerHeight;
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      canvas.style.width = w + "px";
+      canvas.style.height = h + "px";
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const count = Math.min(110, Math.floor((w * h) / 16000));
+      stars = Array.from({ length: count }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        r: Math.random() * 1.3 + 0.3,
+        depth: Math.random() * 0.6 + 0.2,
+        tw: Math.random() * Math.PI * 2,
+        ts: Math.random() * 0.9 + 0.3,
+        vx: (Math.random() - 0.5) * 0.05,
+        vy: (Math.random() - 0.5) * 0.03,
+        hue: Math.random() < 0.75 ? "200,240,255" : "190,160,255"
+      }));
+    }
+
+    let scrollY = window.scrollY || 0;
+    window.addEventListener("scroll", () => { scrollY = window.scrollY || 0; }, { passive: true });
+
+    function frame(t) {
+      if (!running) return;
+      raf = requestAnimationFrame(frame);
+      ctx.clearRect(0, 0, w, h);
+      for (const s of stars) {
+        s.x += s.vx; s.y += s.vy;
+        if (s.x < -4) s.x = w + 4; else if (s.x > w + 4) s.x = -4;
+        if (s.y < -4) s.y = h + 4; else if (s.y > h + 4) s.y = -4;
+        const py = (s.y - scrollY * s.depth * 0.12) % (h + 8);
+        const yy = py < -4 ? py + h + 8 : py;
+        const alpha = 0.25 + 0.55 * (0.5 + 0.5 * Math.sin(s.tw + (t || 0) * 0.001 * s.ts));
+        ctx.beginPath();
+        ctx.arc(s.x, yy, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${s.hue},${alpha.toFixed(3)})`;
+        ctx.fill();
+      }
+    }
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.hidden) {
+        running = false;
+        cancelAnimationFrame(raf);
+      } else if (!running) {
+        running = true;
+        raf = requestAnimationFrame(frame);
+      }
+    });
+    window.addEventListener("resize", build, { passive: true });
+    build();
+    raf = requestAnimationFrame(frame);
+  }
+
+  /* ---- Nav solidifies on scroll ---- */
+  function initNavScroll() {
+    const nav = document.querySelector(".nav");
+    if (!nav) return;
+    let ticking = false;
+    function update() {
+      ticking = false;
+      nav.classList.toggle("is-scrolled", (window.scrollY || 0) > 24);
+    }
+    window.addEventListener("scroll", () => {
+      if (!ticking) { ticking = true; requestAnimationFrame(update); }
+    }, { passive: true });
+    update();
+  }
+
+  /* ---- Button ripple ---- */
+  function initRipple() {
+    if (reduceMotion) return;
+    document.querySelectorAll(".btn").forEach((btn) => {
+      btn.addEventListener("pointerdown", (e) => {
+        const r = btn.getBoundingClientRect();
+        const size = Math.max(r.width, r.height) * 1.1;
+        const span = document.createElement("span");
+        span.className = "ripple";
+        span.style.width = span.style.height = size + "px";
+        span.style.left = e.clientX - r.left - size / 2 + "px";
+        span.style.top = e.clientY - r.top - size / 2 + "px";
+        btn.appendChild(span);
+        span.addEventListener("animationend", () => span.remove());
+      });
+    });
+  }
+
   /* ---- Boot ---- */
   document.addEventListener("DOMContentLoaded", () => {
     setLang(getLang());
@@ -511,5 +610,8 @@
     initScrollProgress();
     initSpotlight();
     initScrollSpy();
+    initStarfield();
+    initNavScroll();
+    initRipple();
   });
 })();

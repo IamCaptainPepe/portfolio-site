@@ -1813,3 +1813,110 @@ html { scrollbar-width: thin; scrollbar-color: rgba(34, 211, 238, 0.4) #050816; 
   .hero__pepe-wrap::after { display: none; }
   .section__head h2 { animation: none !important; background-image: none !important; -webkit-text-fill-color: currentColor; }
 }
+
+/* ============================================================
+   Wave 3 — starfield, nav scroll state, border beam, ripple
+   ============================================================ */
+
+/* Starfield canvas */
+#starfield {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.8;
+}
+
+/* Nav — solidifies after scroll */
+.nav {
+  transition: background 0.4s var(--ease), border-color 0.4s var(--ease), box-shadow 0.4s var(--ease), backdrop-filter 0.4s var(--ease);
+}
+.nav.is-scrolled {
+  background: rgba(5, 8, 22, 0.72);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  backdrop-filter: blur(18px) saturate(1.4);
+  border-bottom-color: rgba(34, 211, 238, 0.16);
+  box-shadow: 0 10px 40px -18px rgba(0, 0, 0, 0.8), 0 1px 0 rgba(34, 211, 238, 0.08);
+}
+
+/* Flagship — animated border beam (needs @property; degrades silently) */
+@property --beam-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+.flagship { position: relative; }
+.flagship::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  pointer-events: none;
+  z-index: 5;
+  background: conic-gradient(
+    from var(--beam-angle),
+    transparent 0deg 200deg,
+    rgba(34, 211, 238, 0.9) 260deg,
+    rgba(124, 58, 237, 0.9) 300deg,
+    transparent 340deg 360deg
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  animation: beam-rotate 7s linear infinite;
+}
+@keyframes beam-rotate {
+  to { --beam-angle: 360deg; }
+}
+
+/* Button ripple */
+.btn { position: relative; overflow: hidden; }
+.btn .ripple {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  transform: scale(0);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.12) 60%, transparent 70%);
+  animation: ripple-kf 0.65s var(--ease) forwards;
+}
+.btn--ghost .ripple,
+.btn--secondary .ripple {
+  background: radial-gradient(circle, rgba(34, 211, 238, 0.35), rgba(34, 211, 238, 0.1) 60%, transparent 70%);
+}
+@keyframes ripple-kf {
+  to { transform: scale(2.6); opacity: 0; }
+}
+
+/* Footer — glowing seam line */
+.footer { position: relative; }
+.footer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.5), rgba(124, 58, 237, 0.5), transparent);
+  background-size: 200% 100%;
+  animation: seam-slide 8s linear infinite;
+}
+@keyframes seam-slide {
+  to { background-position: -200% 0; }
+}
+
+/* Icon buttons — playful lift */
+.icon-btn { transition: transform 0.35s var(--ease), box-shadow 0.35s var(--ease), border-color 0.35s var(--ease); }
+.icon-btn:hover {
+  transform: translateY(-3px) scale(1.08);
+  box-shadow: 0 8px 22px -8px rgba(34, 211, 238, 0.5);
+}
+
+/* Reduced motion — wave 3 kill-switch */
+@media (prefers-reduced-motion: reduce) {
+  #starfield { display: none; }
+  .flagship::before { display: none; }
+  .footer::before { animation: none; }
+  .btn .ripple { display: none; }
+}
