@@ -526,6 +526,7 @@ body.is-ready .nav {
 
 /* ---------- Hero ---------- */
 .hero {
+  position: relative;
   padding-top: 36px;
   padding-bottom: 40px;
   overflow: visible;
@@ -1919,4 +1920,171 @@ html { scrollbar-width: thin; scrollbar-color: rgba(34, 211, 238, 0.4) #050816; 
   .flagship::before { display: none; }
   .footer::before { animation: none; }
   .btn .ripple { display: none; }
+}
+
+/* ============================================================
+   Wave 4 — MAX WOW: fx canvas, pepe wow, rainbow mode,
+   hero parallax, breathing cards, floating chips, beam buttons
+   ============================================================ */
+
+/* Particle FX canvas */
+.fx-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  pointer-events: none;
+}
+
+/* Hero mouse parallax (translate prop — independent of entrance transform) */
+.hero__visual {
+  translate: calc(var(--mx, 0) * 16px) calc(var(--my, 0) * 12px);
+  transition: translate 0.35s ease-out;
+}
+.hero__glow {
+  transform: translate(-50%, calc(-50% + var(--sy, 0px)));
+}
+
+/* Pepe click — jump + glitch + chromatic shake */
+.hero__pepe-wrap { cursor: pointer; }
+.hero__pepe-wrap.is-wow .hero__pepe {
+  animation: pepe-wow 0.95s var(--ease);
+}
+@keyframes pepe-wow {
+  0%   { transform: translateY(0) scale(1); filter: none; }
+  15%  { transform: translateY(-26px) scale(1.07, 0.92); filter: hue-rotate(80deg) saturate(1.8); }
+  30%  { transform: translateY(4px) scale(0.94, 1.08) translateX(7px); filter: hue-rotate(-130deg) brightness(1.35); }
+  45%  { transform: translateY(-14px) translateX(-7px); filter: hue-rotate(190deg) saturate(2.2); }
+  60%  { transform: translateY(2px) translateX(4px) scale(1.03, 0.97); filter: hue-rotate(-60deg); }
+  75%  { transform: translateY(-6px) translateX(-2px); filter: brightness(1.2); }
+  100% { transform: translateY(0) scale(1); filter: none; }
+}
+
+/* Emoji pop burst around Pepe */
+.emoji-pop {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  font-size: 1.7rem;
+  pointer-events: none;
+  z-index: 12;
+  opacity: 0;
+  animation: emoji-fly 1.15s var(--ease-out) forwards;
+}
+@keyframes emoji-fly {
+  0%   { opacity: 1; translate: -50% -50%; scale: 0.5; }
+  20%  { opacity: 1; scale: 1.25; }
+  100% { opacity: 0; translate: calc(-50% + var(--dx, 0px)) calc(-50% + var(--dy, -120px)); scale: 1.15; rotate: var(--rot, 30deg); }
+}
+
+/* Rainbow mode (5 clicks on Pepe / Konami code) */
+body.rainbow .aurora { animation: rainbow-hue 1.4s linear infinite; }
+@keyframes rainbow-hue { to { filter: hue-rotate(360deg); } }
+body.rainbow .nav.is-scrolled,
+body.rainbow .nav {
+  border-bottom-color: rgba(255, 0, 128, 0.4);
+  box-shadow: 0 6px 34px -10px rgba(255, 0, 200, 0.45);
+}
+body.rainbow .scroll-progress {
+  background: linear-gradient(90deg, #ff0080, #ff8c00, #ffee00, #00ff88, #00cfff, #8800ff, #ff0080);
+  background-size: 400% 100%;
+  animation: rainbow-bar 1.2s linear infinite;
+}
+@keyframes rainbow-bar { to { background-position: 400% 0; } }
+
+/* Project cards — breathing glow wave */
+.project-card { animation: card-breathe 7.5s ease-in-out infinite; }
+.project-card:nth-of-type(2) { animation-delay: -2s; }
+.project-card:nth-of-type(3) { animation-delay: -4s; }
+.project-card:nth-of-type(4) { animation-delay: -6s; }
+@keyframes card-breathe {
+  0%, 100% { box-shadow: 0 10px 40px -18px rgba(0, 0, 0, 0.6); }
+  50%      { box-shadow: 0 12px 50px -14px rgba(34, 211, 238, 0.3), 0 0 0 1px rgba(34, 211, 238, 0.12); }
+}
+
+/* Skill chips — ambient float */
+.skill-chip { animation: chip-float 5.5s ease-in-out infinite; }
+.skill-chip:nth-child(odd)  { animation-delay: -2.7s; }
+.skill-chip:nth-child(3n)   { animation-delay: -1.3s; }
+.skill-chip:nth-child(5n)   { animation-delay: -4.1s; }
+@keyframes chip-float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-3.5px); }
+}
+
+/* Primary buttons — orbiting border beam */
+.btn--primary::after {
+  content: "";
+  position: absolute;
+  inset: -1.5px;
+  border-radius: inherit;
+  padding: 1.5px;
+  pointer-events: none;
+  background: conic-gradient(
+    from var(--beam-angle, 0deg),
+    transparent 0deg 200deg,
+    rgba(255, 255, 255, 0.95) 265deg,
+    rgba(124, 58, 237, 0.9) 305deg,
+    transparent 340deg 360deg
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  animation: beam-rotate 3.6s linear infinite;
+}
+
+/* Scroll hint */
+.scroll-hint {
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: var(--muted);
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  opacity: 0.75;
+  transition: opacity 0.5s;
+  pointer-events: none;
+}
+.scroll-hint__mouse {
+  width: 20px;
+  height: 32px;
+  border: 1.5px solid rgba(34, 211, 238, 0.5);
+  border-radius: 11px;
+  position: relative;
+}
+.scroll-hint__mouse::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 6px;
+  width: 3px;
+  height: 7px;
+  margin-left: -1.5px;
+  border-radius: 2px;
+  background: var(--cyan);
+  animation: wheel-drop 1.6s var(--ease) infinite;
+}
+@keyframes wheel-drop {
+  0%   { transform: translateY(0); opacity: 1; }
+  70%  { transform: translateY(11px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 0; }
+}
+.scroll-hint.is-hidden { opacity: 0; }
+
+/* Reduced motion — wave 4 kill-switch */
+@media (prefers-reduced-motion: reduce) {
+  .fx-canvas { display: none; }
+  .hero__visual { translate: none; }
+  .hero__pepe-wrap.is-wow .hero__pepe { animation: none; }
+  .emoji-pop { display: none; }
+  .project-card,
+  .skill-chip { animation: none !important; }
+  .btn--primary::after { display: none; }
+  .scroll-hint__mouse::after { animation: none; }
 }

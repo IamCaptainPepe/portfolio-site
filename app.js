@@ -595,6 +595,166 @@
     });
   }
 
+  /* ---- Particle FX canvas (bursts on click / Pepe / welcome) ---- */
+  let fxApi = null;
+  function initFx() {
+    if (reduceMotion) return;
+    const canvas = document.createElement("canvas");
+    canvas.className = "fx-canvas";
+    canvas.setAttribute("aria-hidden", "true");
+    document.body.appendChild(canvas);
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    let dpr = 1, parts = [], raf = 0;
+    function size() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = innerWidth * dpr;
+      canvas.height = innerHeight * dpr;
+      canvas.style.width = innerWidth + "px";
+      canvas.style.height = innerHeight + "px";
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    size();
+    addEventListener("resize", size, { passive: true });
+    const COLORS = ["34,211,238", "124,58,237", "255,255,255", "25,255,224", "244,63,94"];
+    function loop() {
+      raf = 0;
+      ctx.clearRect(0, 0, innerWidth, innerHeight);
+      parts = parts.filter((p) => p.life > 0);
+      for (const p of parts) {
+        p.x += p.vx; p.y += p.vy;
+        p.vy += p.g; p.vx *= 0.985; p.vy *= 0.985;
+        p.life -= 1;
+        const a = Math.max(p.life / p.max, 0);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r * a + 0.4, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${p.c},${a.toFixed(3)})`;
+        ctx.fill();
+      }
+      if (parts.length) raf = requestAnimationFrame(loop);
+    }
+    function burst(x, y, n, power) {
+      for (let i = 0; i < n; i++) {
+        const ang = Math.random() * Math.PI * 2;
+        const sp = Math.random() * power + 1;
+        const max = 38 + Math.random() * 32;
+        parts.push({
+          x, y,
+          vx: Math.cos(ang) * sp,
+          vy: Math.sin(ang) * sp - 1.2,
+          g: 0.06,
+          r: Math.random() * 2.6 + 1,
+          c: COLORS[(Math.random() * COLORS.length) | 0],
+          life: max, max
+        });
+      }
+      if (parts.length > 420) parts.splice(0, parts.length - 420);
+      if (!raf) raf = requestAnimationFrame(loop);
+    }
+    fxApi = { burst };
+    /* small sparkles on every click */
+    addEventListener("pointerdown", (e) => {
+      burst(e.clientX, e.clientY, 10, 3);
+    }, { passive: true });
+  }
+
+  /* ---- Pepe WOW — click: jump + glitch + emoji + burst; 5x: rainbow ---- */
+  function initPepeWow() {
+    const wrap = document.querySelector(".hero__pepe-wrap");
+    const visual = document.querySelector(".hero__visual");
+    if (!wrap || !visual) return;
+    let clicks = 0, last = 0;
+    wrap.addEventListener("click", (e) => {
+      const now = Date.now();
+      if (now - last > 1600) clicks = 0;
+      last = now;
+      clicks++;
+      const mega = clicks >= 5;
+      if (fxApi && !reduceMotion) fxApi.burst(e.clientX, e.clientY, mega ? 90 : 34, mega ? 7 : 4.5);
+      wrap.classList.remove("is-wow");
+      void wrap.offsetWidth;
+      wrap.classList.add("is-wow");
+      const emojis = mega ? ["🐸", "🚀", "💎", "🔥", "🌈", "⭐", "🧻"] : ["🐸", "✨", "💧"];
+      const count = mega ? 12 : 5;
+      for (let i = 0; i < count; i++) {
+        const s = document.createElement("span");
+        s.className = "emoji-pop";
+        s.textContent = emojis[(Math.random() * emojis.length) | 0];
+        s.style.setProperty("--dx", (Math.random() * 200 - 100).toFixed(0) + "px");
+        s.style.setProperty("--dy", (-90 - Math.random() * 150).toFixed(0) + "px");
+        s.style.setProperty("--rot", (Math.random() * 140 - 70).toFixed(0) + "deg");
+        s.style.animationDelay = i * 45 + "ms";
+        visual.appendChild(s);
+        setTimeout(() => s.remove(), 1350 + i * 45);
+      }
+      if (mega) {
+        clicks = 0;
+        document.body.classList.add("rainbow");
+        setTimeout(() => document.body.classList.remove("rainbow"), 7000);
+      }
+    });
+  }
+
+  /* ---- Konami code — rainbow mode ---- */
+  function initKonami() {
+    const seq = ["ArrowUp", "ArrowUp", "ArrowDown", "ArrowDown", "ArrowLeft", "ArrowRight", "ArrowLeft", "ArrowRight", "b", "a"];
+    let idx = 0;
+    addEventListener("keydown", (e) => {
+      idx = e.key === seq[idx] ? idx + 1 : (e.key === seq[0] ? 1 : 0);
+      if (idx === seq.length) {
+        idx = 0;
+        document.body.classList.add("rainbow");
+        if (fxApi) fxApi.burst(innerWidth / 2, innerHeight / 3, 120, 8);
+        setTimeout(() => document.body.classList.remove("rainbow"), 9000);
+      }
+    });
+  }
+
+  /* ---- Hero mouse parallax + glow scroll parallax + scroll hint ---- */
+  function initHeroFx() {
+    const hero = document.querySelector(".hero");
+    const glow = document.querySelector(".hero__glow");
+    if (hero && finePointer && !reduceMotion) {
+      hero.addEventListener("pointermove", (e) => {
+        const r = hero.getBoundingClientRect();
+        hero.style.setProperty("--mx", ((e.clientX - r.left) / r.width - 0.5).toFixed(3));
+        hero.style.setProperty("--my", ((e.clientY - r.top) / r.height - 0.5).toFixed(3));
+      });
+      hero.addEventListener("pointerleave", () => {
+        hero.style.setProperty("--mx", 0);
+        hero.style.setProperty("--my", 0);
+      });
+    }
+    if (glow && !reduceMotion) {
+      let ticking = false;
+      addEventListener("scroll", () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+          ticking = false;
+          const y = Math.min(window.scrollY || 0, 600);
+          glow.style.setProperty("--sy", (y * 0.18).toFixed(1) + "px");
+        });
+      }, { passive: true });
+    }
+    const hint = document.querySelector(".scroll-hint");
+    if (hint) {
+      addEventListener("scroll", () => {
+        hint.classList.toggle("is-hidden", (window.scrollY || 0) > 80);
+      }, { passive: true });
+    }
+    /* welcome sparkle around Pepe */
+    if (fxApi) {
+      setTimeout(() => {
+        const wrap = document.querySelector(".hero__pepe-wrap");
+        if (!wrap) return;
+        const r = wrap.getBoundingClientRect();
+        if (r.width === 0) return;
+        fxApi.burst(r.left + r.width / 2, r.top + r.height * 0.4, 40, 5);
+      }, 1400);
+    }
+  }
+
   /* ---- Boot ---- */
   document.addEventListener("DOMContentLoaded", () => {
     setLang(getLang());
@@ -613,5 +773,9 @@
     initStarfield();
     initNavScroll();
     initRipple();
+    initFx();
+    initPepeWow();
+    initKonami();
+    initHeroFx();
   });
 })();
