@@ -19,6 +19,7 @@
   --nav-h: 68px;
   --font-display: "Syne", system-ui, sans-serif;
   --font-body: "Outfit", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", monospace;
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -1581,4 +1582,130 @@ body.is-ready .hero-enter[data-enter="6"] { animation-delay: 0.7s; }
 @media (min-width: 1440px) {
   :root { --max: 1180px; }
   .section { padding-top: 96px; }
+}
+
+/* ============================================================
+   Polish — mono accents, spotlight, progress, scroll-spy
+   ============================================================ */
+
+/* Technical monospace accents (text unchanged, typeface only) */
+.eyebrow,
+.mono,
+.hero__kicker,
+.badge,
+.project-card__index,
+.flagship__og-pill,
+.hero__pills li,
+.team__tags li,
+.lang-btn,
+.footer__copy {
+  font-family: var(--font-mono);
+}
+.eyebrow { letter-spacing: 0.16em; }
+.project-card__index { letter-spacing: 0.2em; }
+
+/* Scroll progress bar */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 200;
+  pointer-events: none;
+  transform-origin: 0 50%;
+  transform: scaleX(var(--sp, 0));
+  background: linear-gradient(90deg, var(--cyan), var(--mint) 45%, var(--violet));
+  box-shadow: 0 0 14px rgba(34, 211, 238, 0.55);
+}
+
+/* Card spotlight — soft glow follows the cursor inside glass cards */
+.glass-card { position: relative; }
+.glass-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.45s var(--ease);
+  background: radial-gradient(
+    340px circle at var(--mx, 50%) var(--my, 50%),
+    rgba(34, 211, 238, 0.09),
+    transparent 62%
+  );
+}
+.glass-card:hover::after { opacity: 1; }
+
+/* Primary button sheen sweep */
+.btn--primary { position: relative; overflow: hidden; }
+.btn--primary::before {
+  content: "";
+  position: absolute;
+  top: -20%;
+  bottom: -20%;
+  left: -70%;
+  width: 45%;
+  pointer-events: none;
+  background: linear-gradient(105deg, transparent, rgba(255, 255, 255, 0.5), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.65s var(--ease);
+}
+.btn--primary:hover::before { left: 130%; }
+
+/* Skill chip micro-sheen */
+.skill-chip { position: relative; overflow: hidden; }
+.skill-chip::after {
+  content: "";
+  position: absolute;
+  top: -30%;
+  bottom: -30%;
+  left: -80%;
+  width: 50%;
+  pointer-events: none;
+  background: linear-gradient(105deg, transparent, rgba(255, 255, 255, 0.14), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.6s var(--ease);
+}
+.skill-chip:hover::after { left: 140%; }
+
+/* Scroll-spy active nav link */
+.nav__links a.is-active { color: var(--text); }
+.nav__links a.is-active::after { transform: scaleX(1); }
+
+/* Hero breathing life */
+@media (min-width: 960px) {
+  .hero__pepe-wrap { animation: pepe-float 7s ease-in-out infinite; }
+}
+@keyframes pepe-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+.hero__glow { animation: glow-breathe 6.5s ease-in-out infinite; }
+@keyframes glow-breathe {
+  0%, 100% { opacity: 0.85; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.09); }
+}
+
+/* Scrollbar + selection */
+html { scrollbar-width: thin; scrollbar-color: rgba(34, 211, 238, 0.4) #050816; }
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: #050816; }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(34, 211, 238, 0.55), rgba(124, 58, 237, 0.55));
+  border-radius: 999px;
+  border: 2px solid #050816;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(34, 211, 238, 0.8), rgba(124, 58, 237, 0.8));
+}
+::selection { background: rgba(34, 211, 238, 0.32); color: #ffffff; }
+
+/* Reduced motion — polish kill-switch */
+@media (prefers-reduced-motion: reduce) {
+  .hero__pepe-wrap,
+  .hero__glow { animation: none !important; }
+  .btn--primary::before,
+  .skill-chip::after,
+  .glass-card::after { display: none; }
 }

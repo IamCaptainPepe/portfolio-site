@@ -431,6 +431,71 @@
     updateParallax();
   }
 
+  /* ---- Scroll progress bar ---- */
+  function initScrollProgress() {
+    const bar = document.querySelector(".scroll-progress");
+    if (!bar) return;
+    let ticking = false;
+    function update() {
+      ticking = false;
+      const el = document.documentElement;
+      const max = el.scrollHeight - el.clientHeight;
+      bar.style.setProperty("--sp", max > 0 ? (el.scrollTop / max).toFixed(4) : "0");
+    }
+    window.addEventListener(
+      "scroll",
+      () => {
+        if (!ticking) {
+          ticking = true;
+          requestAnimationFrame(update);
+        }
+      },
+      { passive: true }
+    );
+    window.addEventListener("resize", update, { passive: true });
+    update();
+  }
+
+  /* ---- Card spotlight — cursor coords for CSS glow ---- */
+  function initSpotlight() {
+    if (!finePointer) return;
+    document.querySelectorAll(".glass-card").forEach((card) => {
+      card.addEventListener(
+        "pointermove",
+        (e) => {
+          const r = card.getBoundingClientRect();
+          card.style.setProperty("--mx", (((e.clientX - r.left) / r.width) * 100).toFixed(1) + "%");
+          card.style.setProperty("--my", (((e.clientY - r.top) / r.height) * 100).toFixed(1) + "%");
+        },
+        { passive: true }
+      );
+    });
+  }
+
+  /* ---- Scroll-spy — highlight active nav link ---- */
+  function initScrollSpy() {
+    const links = Array.from(document.querySelectorAll(".nav__links a"));
+    if (!links.length) return;
+    const map = new Map();
+    links.forEach((a) => {
+      const sec = document.querySelector(a.getAttribute("href"));
+      if (sec) map.set(sec, a);
+    });
+    if (!map.size) return;
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((en) => {
+          if (!en.isIntersecting) return;
+          links.forEach((l) => l.classList.remove("is-active"));
+          const a = map.get(en.target);
+          if (a) a.classList.add("is-active");
+        });
+      },
+      { rootMargin: "-35% 0px -55% 0px" }
+    );
+    map.forEach((_a, sec) => io.observe(sec));
+  }
+
   /* ---- Boot ---- */
   document.addEventListener("DOMContentLoaded", () => {
     setLang(getLang());
@@ -443,5 +508,8 @@
     initMobileNav();
     initLangToggle();
     initIcons();
+    initScrollProgress();
+    initSpotlight();
+    initScrollSpy();
   });
 })();
