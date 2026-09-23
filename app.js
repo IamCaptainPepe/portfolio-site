@@ -755,6 +755,105 @@
     }
   }
 
+  /* ---- Scramble-decode section titles on first view ---- */
+  function initScramble() {
+    if (reduceMotion) return;
+    const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ01#·<>/{}[]=";
+    function scramble(el) {
+      const text = el.textContent;
+      const queue = [...text].map((c, i) => ({
+        c,
+        start: Math.floor(i * 1.4),
+        end: Math.floor(i * 1.4) + 9 + Math.floor(Math.random() * 12)
+      }));
+      let frame = 0;
+      (function tick() {
+        let done = 0, out = "";
+        for (const q of queue) {
+          if (frame >= q.end) { done++; out += q.c; }
+          else if (frame >= q.start) out += q.c === " " ? " " : CHARS[(Math.random() * CHARS.length) | 0];
+          else out += q.c === " " ? " " : "\u00a0";
+        }
+        el.textContent = out;
+        frame++;
+        if (done < queue.length) requestAnimationFrame(tick);
+        else el.textContent = text;
+      })();
+    }
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) { io.unobserve(e.target); scramble(e.target); }
+      }
+    }, { threshold: 0.6 });
+    document.querySelectorAll(".section__head h2").forEach((h) => io.observe(h));
+  }
+
+  /* ---- Cursor aura — dot + trailing ring (desktop only) ---- */
+  function initCursor() {
+    if (!finePointer || reduceMotion) return;
+    const dot = document.createElement("div");
+    dot.className = "cursor-dot";
+    const ring = document.createElement("div");
+    ring.className = "cursor-ring";
+    document.body.append(dot, ring);
+    let tx = innerWidth / 2, ty = innerHeight / 2, rx = tx, ry = ty, s = 1, ts = 1;
+    addEventListener("pointermove", (e) => {
+      tx = e.clientX; ty = e.clientY;
+      dot.style.transform = `translate(${tx}px, ${ty}px)`;
+      dot.classList.add("is-on");
+      ring.classList.add("is-on");
+    }, { passive: true });
+    addEventListener("pointerover", (e) => {
+      ts = e.target.closest("a, button, .btn, .hero__pepe-wrap, .icon-btn") ? 1.6 : 1;
+    });
+    document.addEventListener("mouseleave", () => {
+      dot.classList.remove("is-on");
+      ring.classList.remove("is-on");
+    });
+    (function follow() {
+      rx += (tx - rx) * 0.16;
+      ry += (ty - ry) * 0.16;
+      s += (ts - s) * 0.12;
+      ring.style.transform = `translate(${rx}px, ${ry}px) scale(${s.toFixed(3)})`;
+      requestAnimationFrame(follow);
+    })();
+  }
+
+  /* ---- Tab-away title swap ---- */
+  function initTitleSwap() {
+    const orig = document.title;
+    document.addEventListener("visibilitychange", () => {
+      document.title = document.hidden ? "\ud83d\udc38 Пепе скучает — вернись!" : orig;
+    });
+  }
+
+  /* ---- Pepe click sound — synthesized "kvok", no assets ---- */
+  function initPepeSound() {
+    const wrap = document.querySelector(".hero__pepe-wrap");
+    if (!wrap) return;
+    let ac = null;
+    wrap.addEventListener("click", () => {
+      try {
+        ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+        if (ac.state === "suspended") ac.resume();
+        const t = ac.currentTime;
+        [[0, 320, 180], [0.09, 260, 120]].forEach(([dt, f0, f1]) => {
+          const o = ac.createOscillator();
+          const g = ac.createGain();
+          o.type = "triangle";
+          o.frequency.setValueAtTime(f0, t + dt);
+          o.frequency.exponentialRampToValueAtTime(f1, t + dt + 0.09);
+          g.gain.setValueAtTime(0.0001, t + dt);
+          g.gain.exponentialRampToValueAtTime(0.12, t + dt + 0.015);
+          g.gain.exponentialRampToValueAtTime(0.0001, t + dt + 0.11);
+          o.connect(g).connect(ac.destination);
+          o.start(t + dt);
+          o.stop(t + dt + 0.13);
+        });
+      } catch (e) { /* no audio — fine */ }
+    });
+  }
+
   /* ---- Boot ---- */
   document.addEventListener("DOMContentLoaded", () => {
     setLang(getLang());
@@ -777,5 +876,9 @@
     initPepeWow();
     initKonami();
     initHeroFx();
+    initScramble();
+    initCursor();
+    initTitleSwap();
+    initPepeSound();
   });
 })();

@@ -2088,3 +2088,54 @@ body.rainbow .scroll-progress {
   .btn--primary::after { display: none; }
   .scroll-hint__mouse::after { animation: none; }
 }
+
+/* ============================================================
+   Wave 5 — cursor aura, scramble titles, Ken Burns, finale
+   ============================================================ */
+
+/* Cursor aura (native cursor stays) */
+.cursor-dot,
+.cursor-ring {
+  position: fixed;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.35s;
+  border-radius: 50%;
+}
+.cursor-dot {
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  background: var(--cyan);
+  box-shadow: 0 0 14px rgba(34, 211, 238, 0.9);
+}
+.cursor-ring {
+  width: 36px;
+  height: 36px;
+  margin: -18px 0 0 -18px;
+  border: 1.5px solid rgba(34, 211, 238, 0.45);
+  box-shadow: 0 0 22px rgba(34, 211, 238, 0.18), inset 0 0 14px rgba(34, 211, 238, 0.1);
+}
+.cursor-dot.is-on,
+.cursor-ring.is-on { opacity: 1; }
+
+/* Ken Burns breathing on flagship portrait */
+.flagship__portrait-wrap--duo .flagship__portrait {
+  animation: kenburns 16s ease-in-out infinite alternate;
+}
+@keyframes kenburns {
+  from { transform: scale(1) translateY(0); }
+  to   { transform: scale(1.045) translateY(-6px); }
+}
+
+/* Scramble titles — monospace-ish flicker handled in JS; keep layout stable */
+.section__head h2 { min-height: 1.1em; }
+
+/* Reduced motion — wave 5 kill-switch */
+@media (prefers-reduced-motion: reduce) {
+  .cursor-dot, .cursor-ring { display: none; }
+  .flagship__portrait-wrap--duo .flagship__portrait { animation: none !important; }
+}
