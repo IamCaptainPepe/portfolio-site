@@ -1416,7 +1416,9 @@ body.is-ready .hero-enter[data-enter="6"] { animation-delay: 0.7s; }
     clip-path: inset(12% 0 10% 0);
   }
   .section-motion.is-inview {
-    clip-path: inset(0 0 0 0);
+    /* Negative inset: section box stays for layout, but nothing gets clipped —
+       hover tilt/lift and full-bleed bands can extend past section bounds */
+    clip-path: inset(-120px -50vw);
     transition:
       opacity 1.05s var(--ease-out),
       transform 1.1s var(--ease-out),
